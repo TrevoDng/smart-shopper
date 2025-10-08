@@ -9,8 +9,10 @@ import Navbar from './nav/Navbar';
 import SearchForm from './search/Search';
 import Slider from './slider/Slider';
 import { SliderProvider, useSlider } from './slider/slidercontext/SliderContext';
+import ProductsPage from './itemsComponents/products/ProductsPage';
 import PageNotFound from './pagenotfound/pagenotfound';
 import './search/search.css';
+import './itemsComponents/products/Product.css';
 
 const SliderConditionalRenderer: React.FC = () => {
 	const { isSliderVisible } = useSlider();
@@ -33,6 +35,7 @@ function AppComponent() {
 		<Routes> = setTime
 		<Route path="/" element={<Home />} />
 		<Route path="/items" element={<ItemsMainComponent />} />
+		<Route path="/products" element={<ProductsPage />} />
 		<Route path="*" element={<PageNotFound />} />
 		</Routes>
 	</BrowserRouter>

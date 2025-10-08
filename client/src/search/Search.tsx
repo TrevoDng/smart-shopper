@@ -25,7 +25,8 @@ const SearchForm: React.FC = () => {
       onSubmit={handleSubmit}
     >
       <input 
-        type="search" 
+        type="search"
+        id='serach-products' 
         placeholder="Search products"
          value={searchQuery}
          onChange={handleInputChange}
