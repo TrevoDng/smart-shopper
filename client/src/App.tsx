@@ -13,6 +13,8 @@ import ProductsPage from './itemsComponents/products/ProductsPage';
 import PageNotFound from './pagenotfound/pagenotfound';
 import './search/search.css';
 import './itemsComponents/products/Product.css';
+import CategoryFilter from './itemsComponents/products/category-filter/CategoryFilter';
+import { combinedProducts } from './itemsComponents/products/data/demoData';
 
 const SliderConditionalRenderer: React.FC = () => {
 	const { isSliderVisible } = useSlider();
@@ -31,8 +33,10 @@ function AppComponent() {
 		<Navbar onSelectedType={handleSelectedType} selectedType={selectedType} />
 		<SearchForm />
 		<MyComponent />
-		<SliderConditionalRenderer />	
-		<Routes> = setTime
+		<SliderConditionalRenderer />
+		<CategoryFilter datas={combinedProducts} onSelectedType={setSelectedType} selectedType={selectedType} />	
+		{/*<ProductsPage /> */}
+		<Routes>
 		<Route path="/" element={<Home />} />
 		<Route path="/items" element={<ItemsMainComponent />} />
 		<Route path="/products" element={<ProductsPage />} />

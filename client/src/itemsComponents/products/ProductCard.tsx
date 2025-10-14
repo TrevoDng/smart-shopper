@@ -82,7 +82,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             {product.price}
           </span>
           <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-            {product.size}
+            {/*product.size*/}
           </span>
         </div>
 

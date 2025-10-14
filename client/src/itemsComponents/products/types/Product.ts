@@ -5,7 +5,8 @@ export interface ProductModel {
   model: string;
   description: string;
   price: string;
-  size: string;
+  currency?: string;
+  //size: string;
   imgSrc: string[];
   longDescription: string;
 }

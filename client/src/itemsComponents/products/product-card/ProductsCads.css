@@ -1,0 +1,157 @@
+
+.item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(245, 245, 250, 0.5);
+  padding: 0 5px 0 5px;
+  margin: 20px;
+  cursor: pointer;
+  color: #000; /*#413e51;*/
+  border-radius: 5px;
+  flex: 1 0 10px;
+  min-width: 180px;
+  max-width: 180px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+    transform: translateY(0px);
+    transition: transform 0.3s ease;
+}
+
+.item.laptops-item {
+    border-top: 2px solid #3498db;
+    
+}
+
+.item.desktop-item {
+    border-top: 2px solid blue;
+    
+}
+
+.item.screens-item {
+    border-top: 2px solid #2ecc71;
+    
+}
+
+.laptops-category-line {
+    background-color: #3498db;
+}
+
+.item:hover {
+    transform: translateY(-3px);
+}
+
+
+.item p {
+    text-align: left;
+    color: gray;
+    font-size: 12px;
+    padding: auto 50px;
+}
+
+.product-info h3 {
+    padding-left: 10px;
+}
+
+.product-info h3 span {
+    float: right;
+    margin-right: 10px;
+}
+.product-info p {
+    padding-left: 10px;
+    color: gray;
+}
+
+item-descr-price {
+    margin: 5px;
+}
+
+.item-price {
+    float: right;
+    color: #e74c3c;
+}
+
+.item-short-description {
+font-size: 10px;
+    float: left;
+}
+.hidden {
+    display: none;
+}
+
+.item-title {
+    font-size: 1px;
+    margin: 0px;
+    color: #3498db;
+}
+
+.add-to-cart-btn {
+    background: linear-gradient(to right, #3498db, #2c3e50);
+    border: 4px none;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px;
+    color: #fff;
+    width: 90%;
+    margin-top: 20px;
+}
+
+.add-to-cart, .buy-now, .wishlist {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.add-to-cart {
+    background-color: #3498db;
+    color: white;
+}
+
+.add-to-cart:hover {
+    background-color: #2980b9;
+}
+.add-to-cart:hover {
+            background-color: #333;
+        }
+        
+        .add-to-cart:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+@media (max-width: 768px) {
+      .item-product {
+    flex: 1 0 100%;
+    margin-bottom: 1rem;
+  }
+  
+  .item-price, .item-quantity, .item-total {
+    flex: 1;
+    text-align: left;
+    margin-bottom: 0.5rem;
+  }
+  
+  .item-price::before {
+    content: "Price: ";
+    font-weight: normal;
+  }
+  
+  .item-total::before {
+    content: "Total: ";
+    font-weight: normal;
+  }
+  
+  .item-actions {
+    position: absolute;
+    bottom: 1rem;
+    right: 0;
+    flex-direction: row;
+  }
+}
