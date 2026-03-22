@@ -1,0 +1,80 @@
+.cartlist-cover-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /*auto max-content min-content;*/
+    gap: 3rem;
+    margin: auto;
+    padding: auto;
+}
+
+.qty-btn {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    background-color: #f3f4f6;   /* light gray */
+    color: #374151;               /* gray-700 */
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.qty-btn:hover:not(.disabled) {
+    background-color: #e5e7eb;    /* darker gray */
+}
+
+.qty-btn.disabled {
+    background-color: #e5e7eb;    /* same as hover but no cursor */
+    color: #9ca3af;                /* gray-400 */
+    cursor: not-allowed;
+}
+
+/* For the increment button (optional, reuse same styles) */
+.qty-btn.increment {
+    /* same as base, no extra needed */
+}
+
+.checkout-section {
+    margin: auto;
+    margin-top: 100px;
+    width: 100%;
+   /* /* background-color: #2980b9; * */
+}
+
+.checkout-section button {
+    background: linear-gradient(to right, #3498db, #2c3e50);
+    color: white;
+    border: none;
+    padding: 10px 0;
+    margin: 10px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%; 
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+}
+
+.checkout-section button:hover {
+            background: linear-gradient(to right, #2980b9, #1a252f);
+            transform: scale(1.02);
+}
+
+@media (min-width:768px){
+    .cartlist-cover-container {
+        padding: 0 200px;
+    }
+}
+
+@media (max-width:768px){
+    .cartlist-cover-container {
+        display: block;
+    }
+
+    .checkout-section {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+}

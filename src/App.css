@@ -1,0 +1,222 @@
+/*.App {
+  text-align: center;
+}
+  */
+
+  body {
+    background-color: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  * {
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  .website-main-container {
+    width: auto;
+  }
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+
+
+.main-content-container {
+  position: relative;
+  background-color: rgba(184, 11, 184, 0);
+  margin: 0px;
+  width: 100% !important;
+}
+
+
+.main-page-content {
+  display: flex;
+  min-height: calc(100vh - 140px); /* Adjust based on your navbar/footer height */
+  gap: 20px;
+  padding: 0px;
+  /*max-width: 1200px; */
+  width: auto;
+  margin: 0 auto;
+  /*background-color: #e01616;*/
+}
+
+
+.products-main-container-cover {
+  display: block;
+  position: relative;
+  width: 100% !important;
+}
+
+/*most bought items*/
+.most-bought-items-container {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  padding: 20px;
+  background-color: rgba(240, 249, 255, 0.568);
+  margin: 50px;
+  border: 1px solid rgba(0, 38, 255, 0.205);
+  border-radius: 10px;
+}
+
+.most-bought-items-section h2 {
+  text-align: center;
+}
+
+/*payment options*/
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .payment-section {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #f9fafc;
+            border-radius: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .payment-section h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            border-left: 6px solid #3b82f6;
+            padding-left: 1rem;
+        }
+
+        .payment-grid {
+          /*
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 1rem;
+            align-items: stretch;
+            */
+            text-align: center;
+            background-color: #0284c7;
+        }
+
+        .payment-grid img {
+            width: 100%;
+            height: 350px;
+            object-fit: contain;
+
+        }
+
+        .payment-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1rem 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 500;
+            color: #0f172a;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            min-height: 70px;
+            word-break: break-word;
+        }
+
+        .payment-item:hover {
+            transform: translateY(-3px);
+            border-color: #b1c5e0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            background: #ffffff;
+        }
+
+        /* Optional: subtle brand color hints (just for visual variety) */
+        .payment-item.visa { background: #f0f5ff; border-color: #1a1f71; color: #1a1f71; }
+        .payment-item.edgars { background: #fff0f0; border-color: #cc0000; }
+        .payment-item.card { background: #f3f4f6; border-color: #6b7280; }
+        .payment-item.pay { background: #e6f7f0; border-color: #059669; }
+        .payment-item.rcs { background: #fff4e6; border-color: #f97316; }
+        .payment-item.payjustnow { background: #e0f2fe; border-color: #0284c7; }
+        .payment-item.xpayflex { background: #ede9fe; border-color: #7c3aed; }
+        .payment-item.mobicred { background: #fce7f3; border-color: #db2777; }
+        .payment-item.happypay { background: #fef9c3; border-color: #ca8a04; }
+        .payment-item.bank { background: #dbeafe; border-color: #2563eb; }
+        .payment-item.payby { background: #f1f5f9; border-color: #475569; }
+        .payment-item.zapper { background: #fae8ff; border-color: #a855f7; }
+
+        /* Responsive touch */
+        @media (max-width: 500px) {
+            .payment-section {
+                padding: 1.5rem;
+                border-radius: 1.5rem;
+            }
+            .payment-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 0px !important;
+  }
+  
+  .main-content-container {
+    background-color: rgba(238, 130, 238, 0);
+    width: auto !important;
+  }
+
+  .left-sidebar-section {
+    display: none;
+  }
+
+  .main-page-content {
+    display: block;
+    min-height: calc(100vh - 140px); /* Adjust based on your navbar/footer height */
+    gap: 20px;
+    padding: 0px !important;
+    max-width: auto !important;
+    margin: 0 auto;
+    background-color: #61dafb00;
+  }
+
+  .most-bought-items-container {
+    margin: auto;
+  }
+}

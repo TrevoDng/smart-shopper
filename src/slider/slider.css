@@ -1,0 +1,140 @@
+.website-slider-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  background-color: #d4d4d4bb !important;
+  /*background: linear-gradient(135deg, #021464 0%, #8f5008 100%) !important;*/
+  
+}
+.website-main-container .slider {
+  margin-left: 20px;
+}
+
+.website-slider-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  margin-left: 50px;
+  margin-right: 0;
+  /*color:#3e4c8a;*/
+  /*background-color: #61dafb9d;*/
+}
+
+
+.website-slider-title h1 {
+  font-size: 30px;
+  color: #0647d3;
+}
+
+.website-slider-title p {
+  font-size: large;
+  color: #ee6f1a;
+  max-width: 450px;
+  background-color: #ffffff2d; /*#0310537e;*/
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.slider {
+      position: relative;
+      max-width: 400px;
+      margin: auto;
+      overflow: hidden;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      
+    }
+    .slides {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+    }
+    .slides img {
+      width: 600px; /** width: 100% **/
+      border-radius: 10px;
+    }
+    .navigation {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+    }
+    .navigation button {
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      padding: 10px;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+.slider h4 {
+    position: absolute;
+    bottom:60px;
+    right: 10px;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+/* Dots indicator */
+.dots {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+}
+
+.dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: #94a3b8;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dot.active {
+  background: #1e293b;
+  transform: scale(1.3);
+}
+
+.dot:hover {
+  background: #475569;
+}
+
+@media (max-width: 678px) {
+  .slides img {
+      border-radius: 5px;
+    }
+
+     .website-slider-container {
+    margin-top: 50px;
+    background-color: #fff !important;
+  }
+
+  .website-main-container .slider {
+    margin-left: auto;
+  }
+
+  .website-slider-title {
+    display: none;
+  position: relative;
+  top: 50px;
+  bottom: 50px;
+  margin: 100px;
+}
+  
+}

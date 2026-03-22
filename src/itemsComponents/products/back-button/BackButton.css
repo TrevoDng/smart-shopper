@@ -1,0 +1,29 @@
+#leave-item-data-container {
+    margin: 10px auto;
+    color: none;
+    background-color: none !important;
+    background: none !important;
+}
+
+
+.leave-item-data-btn {
+    margin: 50px;
+    border: none;
+    border-radius: 10px;
+    background-color:none !important;
+    color: none !important; /*#fc8d4f; #fc036b; #4785a8 #006effff*/
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#leave-item-data-btn {
+    background: none !important;
+    cursor: pointer;
+}
+
+.leave-item-data-btn i {
+    font-size: 28px;
+    background-color: none !important;
+    background: none !important;
+    color: rgb(110, 110, 110);
+}

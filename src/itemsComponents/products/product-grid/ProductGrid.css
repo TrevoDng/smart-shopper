@@ -1,0 +1,216 @@
+.products-main-container {
+    background-color: rgba(250, 235, 215, 0);
+}
+
+.items-container {
+    display: flex;
+    flex-direction: row;
+
+    overflow-x: hidden; /* Important for accurate measurement*/
+    flex-wrap: wrap; /* Prevent wrapping*/
+    position: relative;
+  width: auto;
+  justify-content: space-between;
+    margin-bottom: 0;
+    background-color: #f7cb0a;
+}
+
+.items-container img {
+    position:relative;
+    width: 160px;
+    height: 140px;
+}
+
+.items-container > * {
+    flex: 0 0 auto;
+}
+
+.type-title {
+    text-align:center;
+    background-color: #DBBC34;
+    margin-top: 10px;
+   /* color: #fff; */
+}
+
+.type-title span{
+    text-align:center;
+    border-radius: 0px 30px 0px 0px; 
+    font-size: 20px;
+}
+.item-type-container {
+   color: red;
+}
+
+.laptops-category-line {
+    background-color: blue;
+}
+
+.inner-items-container {
+    display:flex;
+  flex-direction: row;
+
+  margin: auto;
+  margin-bottom: 50px;
+    /* color: #fff; */
+    width: 300px;
+    border: none;
+    border-radius: 10px;
+    /*box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);*)*/
+  background-color: none;
+}
+
+.item-type {
+    
+    position: absolute;
+    background-color: light-blue;
+    all: unset;
+    display: block;
+    width: 100%;
+    flex: none;
+    box-sizing: border-box;
+    margin: 50px 0 0 0;
+    /*padding:0;*/
+    font-size: 5vw;
+    text-align: center;
+    color: gray;
+}
+
+.item-type-line-container {
+
+    position: absolute;
+    background-color: #e3e3e3;
+    all: unset;
+    display: block;
+    width: 100%;
+    flex: none;
+    box-sizing: border-box;
+    margin: 0px;
+    /*padding:0;*/
+    text-align: center;
+}
+
+.item-type-line-container hr {
+    width: 200px;
+    background-color: blue;
+    height: 1px;
+    border: none;
+    margin-bottom: 20px;
+}
+
+.items-container.column-alignment {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: 10px; 
+    background-color: none;
+    text-align: center !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow-x: hidden;
+}
+
+.items-container.column-alignment h3 {
+    font-size: 12px;
+    padding:0 0 0 10px;
+    text-align: left;
+    
+}
+
+.column-alignment .item {
+    min-width: auto;
+    max-width: auto;
+    /*padding:0;*/
+    margin: 5px;
+}
+
+
+.column-alignment #item-title {
+    font-size: 9px;
+    /*padding:0;*/
+    margin:0;
+    text-align:left;
+    color: #3498db;
+}
+
+
+.column-alignment .text-display {
+    padding: 0px;
+    background-color: gold;
+}
+
+
+
+.column-alignment  .img-container {
+    position: relative;
+    display: block;
+    min-width: auto !important;
+    max-width: auto !important;
+    height: 150px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border: none;
+    border-radius: 10px;
+    /*padding:0;*/
+    background-color: #e3e3e3 !important;
+}
+
+.column-alignment img{
+    object-fit: cover;
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.column-alignment .item-icon-container i {
+    position: absolute;
+}
+
+.items-data {
+    flex-direction: column;
+    padding: 0px;
+    color: #000;
+    min-width: 300px;
+    border: none;
+    border-radius: 10px;
+}
+
+
+.item p {
+    text-align: left;
+    color: gray;
+    font-size: 12px;
+    padding: auto 50px;
+}
+
+.show-more-products-button-cover {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 100px 15px;
+    margin: 10px 20px;
+    border-radius: 10px;
+    background-color: rgba(245, 245, 250, 0.5);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+}
+
+.show-more-products-button {
+    /*position: absolute;*/
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px 24px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.show-more-products-button:hover {
+  /*transform: translateY(-1px);*/
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
