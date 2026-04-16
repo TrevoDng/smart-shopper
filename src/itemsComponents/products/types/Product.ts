@@ -1,4 +1,4 @@
-
+// src/itemsComponents/products/types/Product.ts
 export interface ProductModel {
   id: string;
   type: string;

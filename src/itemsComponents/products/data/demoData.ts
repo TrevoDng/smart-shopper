@@ -1,4 +1,4 @@
-// data/demoData.ts
+// src/itemsComponents/products/data/demoData.ts
 import { ProductCategory } from '../types/Product';
 // Using placeholder images - replace with your actual image paths
 

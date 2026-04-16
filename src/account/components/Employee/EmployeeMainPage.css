@@ -1,0 +1,177 @@
+/* src/pages/employee/EmployeeMainPage.css */
+.employee-dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.status-banner {
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-banner.status-pending {
+  background: #fef3c7;
+  border-left-color: #f59e0b;
+}
+
+.status-banner.status-approved {
+  background: #d1fae5;
+  border-left-color: #10b981;
+}
+
+.status-icon {
+  font-size: 1.5rem;
+}
+
+.status-info h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+}
+
+.status-info p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #92400e;
+}
+
+.products-table {
+  background: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.products-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.products-table th,
+.products-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.products-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.out-of-stock {
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-badge.approved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.enquiries-list {
+  background: white;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.enquiry-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.enquiry-item:last-child {
+  border-bottom: none;
+}
+
+.enquiry-icon {
+  font-size: 1.25rem;
+}
+
+.enquiry-content {
+  flex: 1;
+}
+
+.enquiry-content p {
+  margin: 0 0 0.25rem 0;
+}
+
+.enquiry-meta {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.enquiry-status {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+}
+
+.enquiry-status.unresolved {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.view-all {
+  margin-top: 1rem;
+  text-align: right;
+}
+
+.view-all a {
+  color: #4f46e5;
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.alert-banner {
+  background: #fee2e2;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.alert-banner span {
+  font-size: 1.25rem;
+}
+
+.alert-banner p {
+  flex: 1;
+  margin: 0;
+  color: #991b1b;
+}
+
+.alert-banner a {
+  background: #ef4444;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  font-size: 0.875rem;
+}

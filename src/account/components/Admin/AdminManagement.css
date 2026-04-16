@@ -1,0 +1,577 @@
+/* src/account/components/Admin/AdminManagement.css */
+/* Admin Management Container */
+.admin-management {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.management-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.management-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.add-admin-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.add-admin-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.add-admin-btn:active {
+  transform: translateY(0);
+}
+
+/* Messages */
+.management-error,
+.management-success {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.management-error {
+  background-color: #fef2f2;
+  border-left: 4px solid #ef4444;
+  color: #991b1b;
+}
+
+.management-success {
+  background-color: #f0fdf4;
+  border-left: 4px solid #10b981;
+  color: #065f46;
+}
+
+/* Sections */
+.management-section {
+  margin-bottom: 2rem;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  padding: 1rem 1.5rem;
+  margin: 0;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Table Styles */
+.users-table {
+  overflow-x: auto;
+}
+
+.users-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table th {
+  text-align: left;
+  padding: 1rem 1.5rem;
+  background-color: #f9fafb;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.users-table td {
+  padding: 1rem 1.5rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.users-table tr:hover {
+  background-color: #f9fafb;
+}
+
+/* Role Badges */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.role-admin {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.role-employee {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.role-client {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-active {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-pending_email,
+.status-email_verified,
+.status-pending_approval {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-deactivated {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+/* Action Buttons */
+.remove-btn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.remove-btn:hover {
+  background-color: #dc2626;
+  transform: scale(1.05);
+}
+
+.current-user-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: #e5e7eb;
+  color: #4b5563;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 0.75rem;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #9ca3af;
+  transition: color 0.2s;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+}
+
+.modal-close:hover {
+  color: #1f2937;
+  background-color: #f3f4f6;
+}
+
+.modal-content form {
+  padding: 1.5rem;
+}
+
+.modal-field {
+  margin-bottom: 1.25rem;
+}
+
+.modal-field label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.modal-field input {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.modal-field input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.modal-hint {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.cancel-btn {
+  padding: 0.625rem 1.25rem;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-btn:hover {
+  background-color: #e5e7eb;
+}
+
+.submit-btn {
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading State */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+/* Add to your existing CSS */
+
+.status-badge.status-pending {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.status-badge.status-rejected {
+  background-color: #dc2626;
+  color: white;
+}
+
+.status-badge.status-deactivated {
+  background-color: #6b7280;
+  color: white;
+}
+
+.action-btn {
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.activate-btn {
+  background-color: #10b981;
+  color: white;
+}
+
+.activate-btn:hover {
+  background-color: #059669;
+}
+
+.deactivate-btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.deactivate-btn:hover {
+  background-color: #dc2626;
+}
+
+.pending-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background-color: #fef3c7;
+  color: #d97706;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.current-user-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background-color: #e5e7eb;
+  color: #4b5563;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state-text {
+  font-size: 0.875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-management {
+    padding: 1rem;
+  }
+
+  .management-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .management-title {
+    text-align: center;
+  }
+
+  .add-admin-btn {
+    justify-content: center;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 0.75rem 1rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: 1rem;
+  }
+
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .modal-content form {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .users-table {
+    font-size: 0.75rem;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .role-badge,
+  .status-badge {
+    font-size: 0.625rem;
+    padding: 0.125rem 0.5rem;
+  }
+
+  .remove-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.625rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .cancel-btn,
+  .submit-btn {
+    width: 100%;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .add-admin-btn,
+  .remove-btn,
+  .modal-overlay {
+    display: none;
+  }
+
+  .admin-management {
+    padding: 0;
+  }
+
+  .management-section {
+    break-inside: avoid;
+  }
+}

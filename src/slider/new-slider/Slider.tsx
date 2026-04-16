@@ -59,11 +59,10 @@ const Slider: React.FC = () => {
     <div className="slider-section">
       <div className="slider-content">
         <div className="slider-title">
-          <h1>Our customers are our first priority</h1>
+          <h1>Shop with purpose. Connect with trust.</h1>
           <p>
-            Your one-stop destination for all your shopping needs. We offer
-            quality products at competitive prices with excellent customer
-            service.
+            Welcome to Aisle-Net - Where Trevor Netshisaulu brings 
+            you a world of products through the power of connection.
           </p>
         </div>
 

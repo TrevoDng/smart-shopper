@@ -1,3 +1,4 @@
+// src/itemsComponents/products/random-products-grid/RandomProductsPage.tsx
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { ProductCategory, ProductModel } from "../types/Product";
 //import ProductsCards from "../product-card/ProductsCads";
@@ -13,6 +14,8 @@ import {
   cleanPrice,
   //getProductsFromSearch
 } from "../utils/filterUtils";
+import { useAdaptedProducts } from "../../../hooks/useAdaptedProducts";
+import { productAdapter } from "../../../services/productAdapter";
 
 import './RandomProductsPage.css';
 import { useMediaQuery } from "../../../screen-size/useMediaQuery";
@@ -98,6 +101,17 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
 
   const isMobile = useMediaQuery('(max-width: 768px)');
 
+    // Fetch real products from database
+  const { 
+    categories: adaptedCategories, 
+    loading: productsLoading, 
+    error: productsError,
+    refresh 
+  } = useAdaptedProducts();
+
+  // Use real data if available, otherwise fallback to demo data
+  const allCategories = adaptedCategories.length > 0 ? adaptedCategories : categories;
+
   function handleShowFilter() {
     showFilter ? setShowFilter(false) : setShowFilter(true);
   }
@@ -115,8 +129,12 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
   
   // Determine base data source: search results or categories
   const baseDataSource = useMemo(() => {
-    return searchedResults.length > 0 ? searchedResults : categories;
-  }, [categories, searchedResults]);
+    return searchedResults.length > 0 ? searchedResults : allCategories;
+  }, [allCategories, searchedResults]);
+  
+  // const baseDataSource = useMemo(() => {
+  //   return searchedResults.length > 0 ? searchedResults : categories;
+  // }, [categories, searchedResults]);
   
   // Calculate price limits
   const priceLimits = useMemo(() => {
@@ -250,7 +268,7 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
 
         { (window.innerWidth  > 768 || showFilter) &&
         <TypeFilter
-          categories={baseDataSource}
+          categories={allCategories}
           selectedTypes={selectedTypes}
           selectedBrands={selectedBrands}
           priceRange={priceRange}
@@ -277,7 +295,7 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
             {(selectedTypes.length > 0 || selectedBrands.length > 0) && (
               <div className="active-filters">
                 {selectedTypes.map(type => {
-                  const category = categories.find(c => c.type === type);
+                  const category = allCategories.find(c => c.type === type);
                   return (
                     <span key={`type-${type}`} className="filter-tag">
                       Type: {category?.title || type}

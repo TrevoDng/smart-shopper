@@ -1,5 +1,5 @@
+// src/itemsComponents/products/utils/ProductTypes.ts
 import { ProductCategory, ProductModel } from "../types/Product";
-
 
 // settign Productcategory[] and ProductModel[]
 export type ProductTypes =(

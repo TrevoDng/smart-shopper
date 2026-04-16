@@ -1,11 +1,8 @@
 import React, { useState, createContext, useEffect } from 'react';
 //import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams, BrowserRouter } from 'react-router-dom';
 import { AuthProvider, useAuth } from './account/context/AuthContext'; //from './contexts/AuthContext';
-import Login from './account/components/Login';
-import Register from './account/components/Register'; 
-import AccountProfile from './account/components/AccountProfile';
-import ItemsMainComponent from './itemsComponents/itemsComponentContainer/ItemsMainComponent';
+import AccountProfile from './account/components/customer/CustomerAccountProfile';
 
 //import Slider from './slider/Slider';
 import Slider from './slider/new-slider/Slider';
@@ -41,12 +38,35 @@ import Cart from './itemsComponents/products/cart/components/cart-new/Cart';
 import PaymentMethodSelector, { PaymentMethod } from './itemsComponents/products/cart/checkout/all-payments-options/PaymentMethodSelector';
 import About from './about/About';
 import Deals from './itemsComponents/products/deals/Deals';
-import AddProduct from './pages/employee/components/AddProduct';
+import AddProduct from './account/components/Employee/AddProduct';
+//import { UnifiedAuthProvider, useUnifiedAuth } from './styles/context/unifiedAuthContext';
+
+// Auth components
+//import RoleSelector from './components/Auth/RoleSelector';
+import CustomerLogin from './account/components/Auth/customer/CustomerLogin'; 
+import CustomerRegister from './account/components/Auth/customer/CustomerRegister';
+import EmployeeLogin from './account/components/Auth/employee/EmployeeLogin';
+import EmployeeRegister from './account/components/Auth/employee/EmployeeRegister';
+import AdminLogin from './account/components/Auth/admin/AdminLogin';
+import AdminManagement from './account/components/Admin/AdminManagement';
+import AdminSetup from './account/components/Admin/AdminSetup';
+import EmployeeMainPage from './account/components/Employee/EmployeeMainPage';
+import AdminMainPage from './account/components/Admin/AdminMainPage';
+import { ThemeProvider } from './styles/context/ThemeContext';
+import './styles/themes.css';
+
+// Protected routes
+import AdminDashboard from './account/components/Admin/AdminDashboard';
+import EmployeeDashboard from './account/components/Employee/EmployeeDashboard';
+//import AccountProfile from './components/AccountProfile'; // Your existing account page
+
 
 const SliderConditionalRenderer: React.FC = () => {
 	const { isSliderVisible } = useSlider();
 	return isSliderVisible ? <Slider /> : null;
 } 
+
+
 
 interface RandomProductsPageProps {
   categories: ProductCategory[];
@@ -281,12 +301,12 @@ const CartlistPage=()=> {
 
 		  <Route path='/login' element={
 			<PublicRoute>
-				<Login />
+				<CustomerLogin />
 			</PublicRoute>
 		  } />
 		  <Route path="/register" element={
         <PublicRoute>
-          <Register />
+          <CustomerRegister />
         </PublicRoute>
       } />
       <Route path="/account" element={
@@ -317,10 +337,27 @@ const CartlistPage=()=> {
 		<Route path='/deals' element={<Deals />} />
 		<Route path='/about' element={<About />} />
 		<Route path="*" element={<PageNotFound />} />
+		<Route path="/login/employee" element={<EmployeeLogin />} />	
+		<Route path="/register/employee" element={<EmployeeRegister />} />
+		<Route path="/employee/add-product" element={<AddProduct />} />
+		<Route path='/employee/mainpage' element={<EmployeeMainPage />} />
+		<Route path='/employee/dashboard' element={<EmployeeDashboard />} />
+		<Route path="/login/admin" element={<AdminLogin />} />
+		<Route path='/admin/mainpage' element={<AdminMainPage />} />
+		<Route path='/admin/dashboard' element={<AdminDashboard />} />
+		
+		<Route path="/login" element={<CustomerLogin />} />
+		
+
+		<Route path='/admin/setup' element={<AdminSetup />} />
+		
+		<Route path='/admin/management' element={<AdminManagement />} />
+		
 		</Routes>
 	</Router>
   );
 }
+
 
 const App: React.FC = () => {
 	const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -391,7 +428,8 @@ const App: React.FC = () => {
 	  // - might result in terminating realtime effect. 
 	
 	return (
-
+		<ThemeProvider>
+		<AuthProvider>
 		<SliderProvider defaultVisible={true}>
 		<div className='website-main-container'>
 		  <CartlistProvider>
@@ -444,6 +482,8 @@ const App: React.FC = () => {
 			
 		</div>
 		</SliderProvider> 
+	</AuthProvider>
+	</ThemeProvider>
 	)
 }
 

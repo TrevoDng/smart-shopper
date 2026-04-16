@@ -1,5 +1,6 @@
+// src/hooks/useImageUpload.ts
 import { useState, useCallback } from 'react';
-import { uploadMultipleProductImages } from '../utils/imageUpload';
+import { uploadMultipleProductImages, UploadOptions } from '../utils/imageUpload';
 
 interface UseImageUploadReturn {
   images: File[];
@@ -10,10 +11,12 @@ interface UseImageUploadReturn {
   addImages: (files: FileList | null) => void;
   removeImage: (index: number) => void;
   clearImages: () => void;
-  uploadToStorage: (productId: string) => Promise<string[]>;
+  uploadImages: (options: UploadOptions) => Promise<string[]>;
+  getImageCount: () => number;
+  hasImages: boolean;
 }
 
-export const useImageUpload = (maxImages: number = 5): UseImageUploadReturn => {
+export const useImageUpload = (maxImages: number = 10): UseImageUploadReturn => {
   const [images, setImages] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
@@ -32,17 +35,21 @@ export const useImageUpload = (maxImages: number = 5): UseImageUploadReturn => {
       return;
     }
     
-    const validFiles = newFiles.filter(file => {
+    const validFiles: File[] = [];
+    
+    for (const file of newFiles) {
       if (!file.type.startsWith('image/')) {
         setError(`${file.name} is not an image`);
-        return false;
+        continue;
       }
       if (file.size > 5 * 1024 * 1024) {
         setError(`${file.name} is larger than 5MB`);
-        return false;
+        continue;
       }
-      return true;
-    });
+      validFiles.push(file);
+    }
+    
+    if (validFiles.length === 0) return;
     
     setImages(prev => [...prev, ...validFiles]);
     
@@ -52,12 +59,15 @@ export const useImageUpload = (maxImages: number = 5): UseImageUploadReturn => {
 
   const removeImage = useCallback((index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
+    // Revoke object URL to avoid memory leaks
     URL.revokeObjectURL(previewUrls[index]);
     setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+    // Also remove from uploaded URLs if it was already uploaded
     setUploadedUrls(prev => prev.filter((_, i) => i !== index));
   }, [previewUrls]);
 
   const clearImages = useCallback(() => {
+    // Revoke all object URLs to avoid memory leaks
     previewUrls.forEach(url => URL.revokeObjectURL(url));
     setImages([]);
     setPreviewUrls([]);
@@ -65,8 +75,9 @@ export const useImageUpload = (maxImages: number = 5): UseImageUploadReturn => {
     setError(null);
   }, [previewUrls]);
 
-  const uploadToStorage = useCallback(async (productId: string): Promise<string[]> => {
+  const uploadImages = useCallback(async (options: UploadOptions): Promise<string[]> => {
     if (images.length === 0) {
+      setError('No images to upload');
       return [];
     }
 
@@ -74,16 +85,28 @@ export const useImageUpload = (maxImages: number = 5): UseImageUploadReturn => {
     setError(null);
 
     try {
-      const urls = await uploadMultipleProductImages(images, productId);
+      const urls = await uploadMultipleProductImages(images, options);
+      
+      if (urls.length === 0) {
+        throw new Error('Failed to upload images');
+      }
+      
       setUploadedUrls(urls);
       return urls;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload failed');
+      const errorMessage = err instanceof Error ? err.message : 'Upload failed';
+      setError(errorMessage);
       return [];
     } finally {
       setIsUploading(false);
     }
   }, [images]);
+
+  const getImageCount = useCallback(() => {
+    return images.length;
+  }, [images.length]);
+
+  const hasImages = images.length > 0;
 
   return {
     images,
@@ -94,6 +117,8 @@ export const useImageUpload = (maxImages: number = 5): UseImageUploadReturn => {
     addImages,
     removeImage,
     clearImages,
-    uploadToStorage
+    uploadImages,
+    getImageCount,
+    hasImages
   };
 };

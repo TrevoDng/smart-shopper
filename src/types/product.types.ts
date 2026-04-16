@@ -1,4 +1,4 @@
-// Product types
+// src/types/product.types.ts
 export interface ProductFormData {
   type: string;
   brand: string;

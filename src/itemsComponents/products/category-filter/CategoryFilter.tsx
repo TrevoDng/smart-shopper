@@ -1,3 +1,4 @@
+// src/itemsComponents/products/category-filter/CategoryFilter.tsx
 import React from "react";
 import { ProductCategory } from "../types/Product";
 import { getFilteredProducts } from "./filteredProducts";

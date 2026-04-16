@@ -1,0 +1,314 @@
+/* src/account/components/Admin/AdminSetup.css */
+.admin-setup-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  padding: 1rem;
+}
+
+.admin-setup-card {
+  max-width: 500px;
+  width: 100%;
+  background: white;
+  border-radius: 1rem;
+  padding: 2.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.setup-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.setup-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.setup-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.setup-subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+/* Messages */
+.setup-error,
+.setup-success {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.setup-error {
+  background-color: #fef2f2;
+  border-left: 4px solid #ef4444;
+}
+
+.setup-success {
+  background-color: #f0fdf4;
+  border-left: 4px solid #10b981;
+}
+
+.error-icon,
+.success-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.error-text {
+  color: #991b1b;
+  font-size: 0.875rem;
+}
+
+.success-text {
+  color: #065f46;
+  font-size: 0.875rem;
+}
+
+/* Form */
+.setup-form {
+  margin-top: 1.5rem;
+}
+
+.setup-field {
+  margin-bottom: 1.5rem;
+}
+
+.setup-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 0.5rem;
+}
+
+.setup-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  background-color: #f8fafc;
+}
+
+.setup-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background-color: white;
+}
+
+.setup-hint {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+/* Info Box */
+.setup-info {
+  background-color: #eff6ff;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.info-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.info-content {
+  flex: 1;
+}
+
+.info-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e40af;
+  margin-bottom: 0.5rem;
+}
+
+.info-text {
+  font-size: 0.75rem;
+  color: #1e3a8a;
+  margin-bottom: 0.5rem;
+}
+
+.info-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.75rem;
+  color: #1e3a8a;
+}
+
+.info-list li {
+  margin-bottom: 0.25rem;
+}
+
+/* Button */
+.setup-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.setup-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.setup-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.setup-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.button-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Footer */
+.setup-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1.5rem;
+}
+
+/* Loading State */
+.loading-spinner {
+  text-align: center;
+  padding: 2rem;
+}
+
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e2e8f0;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+/* Access Denied / Login Required */
+.access-denied,
+.login-required {
+  text-align: center;
+  padding: 1rem;
+}
+
+.denied-icon,
+.login-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.access-denied h2,
+.login-required h2 {
+  font-size: 1.5rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.access-denied p,
+.login-required p {
+  color: #64748b;
+  margin-bottom: 0.5rem;
+}
+
+.login-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.login-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .admin-setup-card {
+    padding: 1.5rem;
+  }
+  
+  .setup-title {
+    font-size: 1.5rem;
+  }
+  
+  .setup-icon {
+    font-size: 3rem;
+  }
+}

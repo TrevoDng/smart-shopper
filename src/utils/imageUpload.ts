@@ -1,29 +1,48 @@
-import { uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { productImageRef, productImagesFolderRef, tempImageRef, generateStorageFileName } from './firebaseReferences';
-import { generateProductId } from './generateId';
+// src/utils/imageUpload.ts
 
 export interface UploadResult {
   success: boolean;
   url?: string;
   error?: string;
   fileName?: string;
-  storagePath?: string;
+  filePath?: string;
 }
 
+export interface UploadOptions {
+  userId: string;
+  productType: string;      // e.g., 'electronics'
+  productSubType: string;   // e.g., 'computers'
+  token: string; // JWT token for authentication
+}
+
+const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api';
+
 /**
- * Upload a single image to Firebase Storage using flexible reference
+ * Generate a unique filename for uploaded images
+ */
+export const generateFileName = (originalName: string, index: number): string => {
+  const timestamp = Date.now();
+  const randomStr = Math.random().toString(36).substring(2, 8);
+  const extension = originalName.split('.').pop() || 'jpg';
+  const baseName = originalName.split('.').slice(0, -1).join('.').replace(/[^a-zA-Z0-9]/g, '_');
+  
+  return `${timestamp}_${randomStr}_${index}_${baseName.substring(0, 30)}.${extension}`;
+};
+
+/**
+ * Upload a single image to the server
  * @param file - The image file to upload
- * @param productId - The product ID (can be 'temp' for new products)
+ * @param options - Upload options with userId, productType, productSubType
  * @param index - Image index for ordering
  * @returns UploadResult with URL and metadata
  */
 export const uploadProductImage = async (
   file: File,
-  productId: string,
+  options: UploadOptions,
   index: number
 ): Promise<UploadResult> => {
   try {
-    // Validate file
+    // Validate file type
     if (!file.type.startsWith('image/')) {
       return { 
         success: false, 
@@ -31,6 +50,7 @@ export const uploadProductImage = async (
       };
     }
 
+    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       return { 
         success: false, 
@@ -38,26 +58,43 @@ export const uploadProductImage = async (
       };
     }
 
-    // Generate unique filename
-    const fileName = generateStorageFileName(file.name, index);
-    
-    // Create storage reference using the flexible pattern
-    // If productId is 'temp', store in temp folder; otherwise in products folder
-    const storageRef = productId === 'temp' 
-      ? tempImageRef(productId, fileName)
-      : productImageRef(productId, fileName);
-    
-    // Upload file
-    const snapshot = await uploadBytes(storageRef, file);
-    
-    // Get download URL
-    const downloadURL = await getDownloadURL(snapshot.ref);
-    
+    // Create form data
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('userId', options.userId);
+    formData.append('productType', options.productType);
+    formData.append('productSubType', options.productSubType);
+    formData.append('index', index.toString());
+
+    // Debug: Log FormData contents
+console.log('FormData contents:');
+for (let pair of formData.entries()) {
+  console.log(pair[0], pair[1]);
+}
+
+    // Upload to server
+    const response = await fetch(`${API_BASE}/upload/product-image`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${options.token}`
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: data.message || data.error?.message || 'Upload failed'
+      };
+    }
+
     return {
       success: true,
-      url: downloadURL,
-      fileName: fileName,
-      storagePath: snapshot.ref.fullPath
+      url: data.data.url,
+      fileName: data.data.fileName,
+      filePath: data.data.filePath
     };
   } catch (error) {
     console.error('Upload failed:', error);
@@ -69,14 +106,17 @@ export const uploadProductImage = async (
 };
 
 /**
- * Upload multiple images
+ * Upload multiple images for a product
+ * @param files - Array of image files
+ * @param options - Upload options with userId, productType, productSubType
+ * @returns Array of successful image URLs
  */
 export const uploadMultipleProductImages = async (
   files: File[],
-  productId: string
+  options: UploadOptions
 ): Promise<string[]> => {
   const uploadPromises = files.map((file, index) => 
-    uploadProductImage(file, productId, index)
+    uploadProductImage(file, options, index)
   );
   
   const results = await Promise.all(uploadPromises);
@@ -97,30 +137,21 @@ export const uploadMultipleProductImages = async (
 };
 
 /**
- * Move images from temp folder to permanent product folder
- * Useful when product is created after images were uploaded
+ * Delete a product image from the server
+ * @param imageUrl - The URL of the image to delete
  */
-export const moveTempImagesToProduct = async (
-  tempId: string,
-  productId: string,
-  imageUrls: string[]
-): Promise<string[]> => {
-  // Note: Firebase Storage doesn't have a direct "move" operation
-  // You would need to download and re-upload, or better: upload directly to final location
-  // This function is a placeholder for the logic if you need it
-  console.log(`Moving images from temp/${tempId} to products/${productId}`);
-  return imageUrls; // Return the same URLs or new ones after moving
-};
-
-/**
- * Delete a product image from storage
- */
-export const deleteProductImage = async (imageUrl: string): Promise<boolean> => {
+export const deleteProductImage = async (imageUrl: string, token: string): Promise<boolean> => {
   try {
-    // Extract path from URL (you might need to parse it)
-    // This is simplified - you'd need to get the reference from the URL
-    console.log('Delete image:', imageUrl);
-    return true;
+    const response = await fetch(`${API_BASE}/upload/product-image`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+       },
+      body: JSON.stringify({ imageUrl }),
+    });
+
+    const data = await response.json();
+    return response.ok && data.success;
   } catch (error) {
     console.error('Delete failed:', error);
     return false;
@@ -129,14 +160,20 @@ export const deleteProductImage = async (imageUrl: string): Promise<boolean> => 
 
 /**
  * Delete all images for a product
+ * @param imageUrls - Array of image URLs to delete
  */
-export const deleteAllProductImages = async (productId: string): Promise<boolean> => {
+export const deleteMultipleProductImages = async (imageUrls: string[], token: string): Promise<boolean> => {
   try {
-    const folderRef = productImagesFolderRef(productId);
-    console.log('Delete all images in:', folderRef.fullPath);
-    // Note: Firebase Storage doesn't have a bulk delete
-    // You'd need to list and delete each file
-    return true;
+    const response = await fetch(`${API_BASE}/upload/product-images`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+       },
+      body: JSON.stringify({ imageUrls }),
+    });
+
+    const data = await response.json();
+    return response.ok && data.success;
   } catch (error) {
     console.error('Delete all failed:', error);
     return false;
