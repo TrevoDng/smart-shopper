@@ -1,17 +1,15 @@
-// src/utils/mergeProductData.ts
+// src/itemsComponents/products/utils/mergeProductData.ts
 import { ProductCategory } from "../types/Product";
-import { combinedProducts } from "../data/demoData";
-// import { ProductCategory } from '../itemsComponents/products/types/Product';
-// import { combinedProducts } from '../itemsComponents/products/data/demoData';
 
 export const mergeProductData = (
   realData: ProductCategory[],
   useRealData: boolean = true
 ): ProductCategory[] => {
   if (!useRealData || realData.length === 0) {
-    return combinedProducts; // Fallback to demo data
+    return []; // Fallback to demo data
   }
-  
+ 
+  /*
   // Merge real data with demo data (real takes precedence)
   const mergedMap = new Map<string, ProductCategory>();
   
@@ -38,4 +36,7 @@ export const mergeProductData = (
   });
   
   return Array.from(mergedMap.values());
+  */
+
+ return realData; // For now, just return real data without merging
 };

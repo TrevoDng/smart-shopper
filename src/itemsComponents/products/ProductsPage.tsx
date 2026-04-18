@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 //import ProductGrid from './products-grid/ProductGrid';
 import { combinedProducts } from './data/demoData';
 import ProductGrid from './product-grid/ProductGrid';
-import SingleOpenedProductPage from './single-opened-product/SingleOpendProductPage';
+import SingleOpenedProductPage from './single-opened-product/SingleOpenedProductPage';
 //import { useSlider } from '../../slider/slidercontext/SliderContext';
 //import Slider from '../../slider/Slider';
 import { BackButton } from './back-button/BackButton';

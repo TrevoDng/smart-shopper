@@ -12,6 +12,13 @@
   animation: fadeIn 0.2s ease-out;
 }
 
+/* Add to ConfirmModal.css */
+.confirm-modal-children {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

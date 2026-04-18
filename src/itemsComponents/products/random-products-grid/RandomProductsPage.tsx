@@ -9,7 +9,7 @@ import { WishlistButton } from "../wish-list/components/WishlistButton";
 import { CartlistButton } from "../cart/components/CartlistButton";
 import TypeFilter from "../aside-filter-section/TypeFilter";
 import { 
-  getAllProducts,
+   getAllProducts,
   applyMultipleFilters,
   cleanPrice,
   //getProductsFromSearch
@@ -110,7 +110,9 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
   } = useAdaptedProducts();
 
   // Use real data if available, otherwise fallback to demo data
-  const allCategories = adaptedCategories.length > 0 ? adaptedCategories : categories;
+  //const allCategories = adaptedCategories.length > 0 ? adaptedCategories : categories;
+
+  const allCategories = adaptedCategories; // For now, we just use real data without fallback
 
   function handleShowFilter() {
     showFilter ? setShowFilter(false) : setShowFilter(true);
@@ -156,17 +158,20 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
   // Apply all filters
   //the problem must be here
   const filteredProducts = useMemo(() => {
+    if (baseDataSource.length === 0) return [];
     return applyMultipleFilters(baseDataSource, {
       selectedTypes,
       selectedBrands,
       priceRange
     });
   }, [baseDataSource, selectedTypes, selectedBrands, priceRange]);
+  /*
   console.log("applyMultipleFilters", applyMultipleFilters(baseDataSource, {
       selectedTypes,
       selectedBrands,
       priceRange
     }).length);
+    */
   
   // Get paginated data
   //this controll products:
@@ -253,6 +258,24 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
     onSelectedType(null);
   };
 
+  // Add this debug component right before the return statement
+const DebugPriceInfo = () => {
+  const allProducts = getAllProducts(baseDataSource);
+  const prices = allProducts.map(p => ({ title: p.title, raw: p.price, cleaned: cleanPrice(p.price) }));
+  
+  console.log('=== PRICE DEBUG ===');
+  console.log('Total products:', allProducts.length);
+  console.log('Prices:', prices);
+  console.log('Price limits:', priceLimits);
+  console.log('Current filter range:', priceRange);
+  console.log('Filtered products:', filteredProducts.length);
+  
+  return null;
+};
+
+// Add this inside your component before the return
+<DebugPriceInfo />
+
   console.log("baseDataSource: ", JSON.stringify(baseDataSource));
 
   return (
@@ -284,13 +307,19 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
       <div className="products-and-filter-info">
         <div className="results-header">
           <div className="results-info">
-            <h3>
+            {productsLoading ? (
+              <h3>Loading products...</h3>
+            ) : allCategories.length === 0 ? (
+              <h3>No products available</h3>
+             ) : (
+              <h3>
               {searchedResults.length > 0 
                 ? `Search Results (${filteredProducts.length} products)`
                 : selectedTypes.length === 0 && selectedBrands.length === 0
                 ? "All Products"
                 : `Filtered Products (${filteredProducts.length} found)`}
-            </h3>
+              </h3>
+              )}
             
             {(selectedTypes.length > 0 || selectedBrands.length > 0) && (
               <div className="active-filters">

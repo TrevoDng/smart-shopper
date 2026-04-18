@@ -17,17 +17,24 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         hideSlider();    
       }, [hideSlider]);
 
+
   const menuItems = [
-    { path: '/admin', label: 'Dashboard', icon: '📊' },
+    { path: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
+    { path: '/admin/mainpage', label: 'Main Page', icon: '🏠' },
+    { path: '/admin/management', label: 'Admin Management', icon: '⚙️' },
+    { path: '/admin/setup', label: 'Admin Once Registration', icon: '⚙️' },
     { path: '/admin/registration-requests', label: 'Registration Requests', icon: '👥', badge: 3 },
     { path: '/admin/pending-products', label: 'Pending Products', icon: '⏳', badge: 5 },
     { path: '/admin/clients', label: 'Clients', icon: '👤' },
     { path: '/admin/employees', label: 'Employees', icon: '👔' },
     { path: '/admin/employee-performance', label: 'Employee Performance', icon: '📈' },
+    { path: '/admin/products', label: 'Products', icon: '📦' },
     { path: '/admin/products-performance', label: 'Products Performance', icon: '🏷️' },
+    { path: '/admin/products-sales', label: 'Products Sales', icon: '💰' },
     { path: '/admin/out-of-stock', label: 'Out of Stock', icon: '⚠️', badge: 2 },
     { path: '/admin/enquiries', label: 'Enquiries', icon: '💬' },
     { path: '/admin/suggestions', label: 'Suggestions', icon: '💡' },
+    { path: '/admin/admin-profile', label: 'Profile', icon: '👤' },
   ];
 
   return (

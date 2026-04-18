@@ -6,6 +6,7 @@ import { useImageUpload } from '../../../hooks/useImageUpload';
 import { productTypes, ProductMainType, ProductSubType } from '../../../utils/productTypes';
 import './AddProduct.css';
 import { useSlider } from '../../../slider/slidercontext/SliderContext';
+import EmployeeLayout from '../layout/EmployeeLayout';
 
 interface ProductFormData {
   mainType: string;
@@ -185,6 +186,7 @@ const AddProduct: React.FC = () => {
   const displayError = submitError || uploadError;
 
   return (
+    <EmployeeLayout>
     <div className="add-product-container">
       <div className="add-product-header">
         <h1>Add New Product</h1>
@@ -435,6 +437,7 @@ const AddProduct: React.FC = () => {
         </div>
       )}
     </div>
+    </EmployeeLayout>
   );
 };
 

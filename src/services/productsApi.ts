@@ -147,6 +147,36 @@ async getAllProducts(status?: string, limit: number = 100, offset: number = 0): 
       outOfStock: allProducts.products.filter(p => p.stockQuantity === 0).length,
     };
   }
+
+  // NEW: Public method to get approved products (no token required)
+  async getPublicApprovedProducts(limit: number = 100, offset: number = 0): Promise<ProductsResponse> {
+    const params = new URLSearchParams();
+    params.append('limit', limit.toString());
+    params.append('offset', offset.toString());
+  
+   // Make sure there's no double slash
+    const url = `${API_BASE}/public/products/approved?${params}`;
+    console.log('Fetching public products from:', url); // Debug log
+  
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+  
+    return this.handleResponse<ProductsResponse>(response);
+  }
+
+  async getPublicProductById(productId: string): Promise<Product> {
+    const url = `${API_BASE}/public/products/${productId}`;
+    console.log('Fetching public product from:', url); // Debug log
+  
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+  
+    return this.handleResponse<Product>(response);
+  }
 }
 
 export const productsApi = new ProductsApi();

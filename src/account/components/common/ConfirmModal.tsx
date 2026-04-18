@@ -11,6 +11,7 @@ interface ConfirmModalProps {
   confirmText?: string;
   cancelText?: string;
   confirmVariant?: 'danger' | 'warning' | 'primary';
+  children?: React.ReactNode; // Add children support
 }
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
@@ -21,7 +22,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onCancel,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
-  confirmVariant = 'danger'
+  confirmVariant = 'danger',
+  children
 }) => {
   if (!isOpen) return null;
 
@@ -45,6 +47,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         </div>
         <div className="confirm-modal-body">
           <p>{message}</p>
+          {children && <div className="confirm-modal-children">{children}</div>}
         </div>
         <div className="confirm-modal-footer">
           <button className="confirm-btn-cancel" onClick={onCancel}>

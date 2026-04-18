@@ -28,25 +28,24 @@ const getTitleForType = (mainType: string): string => {
   return titleMap[mainType] || mainType.charAt(0).toUpperCase() + mainType.slice(1);
 };
 
+// Get full image URL
+const getFullImageUrl = (imgPath: string): string => {
+  if (imgPath.startsWith('http')) return imgPath;
+  return `${API_BASE.replace('/api', '')}${imgPath}`;
+};
+
 // Convert database product to old ProductModel format
 const convertToProductModel = (dbProduct: DBProduct): ProductModel => {
-  // Get the full image URL
-  const getFullImageUrl = (imgPath: string): string => {
-    if (imgPath.startsWith('http')) return imgPath;
-    return `${API_BASE.replace('/api', '')}${imgPath}`;
-  };
-
   return {
     id: dbProduct.id,
-    type: dbProduct.mainType,  // Map mainType to type
+    type: dbProduct.mainType,
     brand: dbProduct.brand,
     title: dbProduct.title,
     description: dbProduct.description,
     price: dbProduct.price.toString(),
-    size: dbProduct.subType,  // Use subType as size field
+    size: dbProduct.subType,
     imgSrc: dbProduct.imgSrc.map(img => getFullImageUrl(img)),
     longDescription: dbProduct.longDescription,
-    // Additional fields that might be useful (optional)
     stockQuantity: dbProduct.stockQuantity,
     status: dbProduct.status
   } as ProductModel & { stockQuantity?: number; status?: string };
@@ -78,7 +77,7 @@ class ProductAdapter {
   private lastFetchTime: number = 0;
   private cacheDuration: number = 5 * 60 * 1000; // 5 minutes
 
-  // Fetch all approved products from database
+  // Fetch all approved products from database using PUBLIC endpoint
   async fetchApprovedProducts(): Promise<ProductModel[]> {
     const now = Date.now();
     
@@ -88,14 +87,15 @@ class ProductAdapter {
     }
     
     try {
-      // Fetch only approved products for public display
-      const response = await productsApi.getAllProducts('approved');
+      // ✅ FIXED: Use public endpoint - no authentication required
+      const response = await productsApi.getPublicApprovedProducts();
       const products = response.products || [];
       
       // Convert to old format
       this.cachedProducts = products.map(convertToProductModel);
       this.lastFetchTime = now;
       
+      console.log(`Loaded ${this.cachedProducts.length} approved products from database`);
       return this.cachedProducts;
     } catch (error) {
       console.error('Failed to fetch products from database:', error);
@@ -115,10 +115,10 @@ class ProductAdapter {
     return products.filter(product => product.type === type);
   }
 
-  // Get single product by ID
+  // Get single product by ID using PUBLIC endpoint
   async getProductById(id: string): Promise<ProductModel | null> {
     try {
-      const dbProduct = await productsApi.getProductById(id);
+      const dbProduct = await productsApi.getPublicProductById(id);
       return convertToProductModel(dbProduct);
     } catch (error) {
       console.error('Failed to fetch product by ID:', error);
