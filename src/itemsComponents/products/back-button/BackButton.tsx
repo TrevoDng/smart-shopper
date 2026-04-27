@@ -4,9 +4,9 @@ import { useSlider } from "../../../slider/slidercontext/SliderContext";
 //import './BackButton.css';
 
 interface BackButtonProps {
-    onSelectedType: (type: string | null)=> void; 
-    selectedType: string | null;
-    onTypeById: (id: number | null)=> void; 
+    //onSelectedCategory: (category: string | null)=> void; 
+    //selectedCategory: string | null;
+    //onTypeById: (id: number | null)=> void; 
     onItemId: (id: string | null)=> void; 
     selectedItemId: string | null;
     onShowCart: (show: boolean)=> void;
@@ -15,9 +15,9 @@ interface BackButtonProps {
 
 // show all items
 export const BackButton: React.FC<BackButtonProps>=({
-    onSelectedType, 
-    selectedType, 
-    onTypeById, 
+    //onSelectedCategory, 
+    //selectedCategory, 
+    //onTypeById, 
     onItemId, 
     selectedItemId, 
     onShowCart, 
@@ -33,12 +33,12 @@ export const BackButton: React.FC<BackButtonProps>=({
     
         navigate(-1);
         /*
-    if (selectedType && !selectedItemId) {
-      onSelectedType(null);
+    if (selectedCategory && !selectedItemId) {
+      onSelectedCategory(null);
       onTypeById(null);
     }
     
-    if (selectedItemId && !selectedType) {
+    if (selectedItemId && !selectedCategory) {
       onItemId(null);
       onTypeById(null);
       navigate('/');

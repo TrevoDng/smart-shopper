@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 
-import { ProductCategory, ProductModel } from '../itemsComponents/products/types/Product';
+import { Product } from '../itemsComponents/products/types/Product';
 import { SearchProductCard } from './SearchProductCard';
 //import './search.css';
 
 interface SearchProductsProps {
-    products:  ProductCategory[];
+    products:  Product[];
     setSearchQuery: (query: string) => void;
     searchQuery: string; 
     //onSelectedType: (type: string | null) => void;
@@ -29,7 +29,7 @@ const getDefaultIcon = (type: string): string => {
 };
 
 // Type guard to check if an item is a ProductCategory
-const isProductCategory = (item: any): item is ProductCategory => {
+const isProductCategory = (item: any): item is Product => {
   return item && Array.isArray(item.models);
 };
 
@@ -96,22 +96,18 @@ const SearchForm: React.FC<SearchProductsProps> = ({
       <div className='search-popup-outer-container' 
       onClick={closeSearchPopup}>
         {products.map(category => (
-          category.models.map(product => (
+          
             <SearchProductCard 
-            key={product.id}
+            key={category.id}
           product={{
-            ...product,
-            currency: product.currency,
-            imgSrc: product.imgSrc,
+            ...category,
+            currency: category.currency,
+            imgSrc: category.imgSrc,
           }}
           onItemId={onItemId}
-          //onSelectedType={onSelectedType}
-          //setSearchQuery={setSearchQuery}
-          //searchQuery={searchQuery}
           onLoading={onLoading}
           loading={loading}
     />
-          ))
         ))}
         </div>
       }

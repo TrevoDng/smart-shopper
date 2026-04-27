@@ -72,7 +72,7 @@ const ProductsPerformance: React.FC = () => {
     } catch (err: any) {
       setError(err.message || 'An error occurred');
       // Use sample data if API fails
-      generateSampleData();
+     // generateSampleData();
     } finally {
       setLoading(false);
     }
@@ -111,6 +111,7 @@ const ProductsPerformance: React.FC = () => {
     ];
   };
 
+  /*
   const generateSampleData = () => {
     const sampleProducts: Product[] = [
       { id: '1', title: 'Gaming Laptop', brand: 'Dell', mainType: 'electronics', subType: 'laptops', description: '', longDescription: '', price: 1200, stockQuantity: 15, imgSrc: [], status: 'approved', employeeId: 'emp1', employeeName: 'John Doe', employeeEmail: 'john@example.com', createdAt: new Date('2024-01-15'), updatedAt: new Date() },
@@ -123,6 +124,7 @@ const ProductsPerformance: React.FC = () => {
     setProductStats(sampleProducts.map(p => ({ productId: p.id, productTitle: p.title, brand: p.brand, soldCount: Math.floor(Math.random() * 100), stockQuantity: p.stockQuantity })));
     setFilteredStats(sampleProducts.map(p => ({ productId: p.id, productTitle: p.title, brand: p.brand, soldCount: Math.floor(Math.random() * 100), stockQuantity: p.stockQuantity })));
   };
+  */
 
   useEffect(() => {
     fetchProducts();

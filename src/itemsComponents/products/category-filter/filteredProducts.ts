@@ -1,6 +1,5 @@
-import { ProductCategory, ProductModel } from "../types/Product";
+import { Product } from "../types/Product";
 
-export const getFilteredProducts = (datas: ProductCategory[], type: string): ProductModel[]=> {
-    const category = datas.find(category => category.type === type);
-    return category ? category.models : [];
+export const getFilteredProducts = (datas: Product[], category: string[]): Product[]=> {
+    return datas.filter(product => Array.isArray(product.category) && product.category.includes(category[0]));
 }

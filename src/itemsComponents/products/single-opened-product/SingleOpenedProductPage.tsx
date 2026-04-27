@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ProductCategory, ProductModel } from "../types/Product";
+import { Product } from "../types/Product";
 
 import './OpenedProductPage.css';
 import ImagePopup from "../image-popup/ImagePopup";
@@ -8,9 +8,10 @@ import { useSlider } from "../../../slider/slidercontext/SliderContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { getPaymentMethodSelector } from "../cart/checkout/all-payments-options/getPaymentMethod";
 import PaymentMethodSelector from "../cart/checkout/all-payments-options/PaymentMethodSelector";
+import { getFullImageUrl } from "../utils/getFullImageUrl";
 
 interface OpenedProductPageProps {
-    itemsData: ProductCategory[];
+    itemsData: Product[];
     setSelectedItemId: (id: string | null)=> void;
     itemId: string | null;
     itemType?: string; // Made optional since it's not used in the component
@@ -84,8 +85,7 @@ const SingleOpenedProductPage: React.FC<OpenedProductPageProps>=({
 
 
    const matchedProduct: any = itemsData
-  .flatMap((product: ProductCategory) => product.models)
-  .find((model: ProductModel) => model.id === itemId);
+  .find((model: Product) => model.id === itemId);
 
   if(!matchedProduct) {
     return <div>Product not found</div>
@@ -187,14 +187,14 @@ const SingleOpenedProductPage: React.FC<OpenedProductPageProps>=({
                   {/**navigate images */}
                   <div className="img-choice-container">
                       {matchedProduct.imgSrc.map((image: string, index: number)=> {
-                        return <img src={image} key={index} onClick={(e)=> changeImage(index)}/>
+                        return <img src={getFullImageUrl(image)} key={index} onClick={(e)=> changeImage(index)}/>
                       })
                     }
                   </div>
 
                     <div className="item-img-container">
                       <img 
-                        src={matchedProduct.imgSrc[imgIndex]} 
+                        src={getFullImageUrl(matchedProduct.imgSrc[imgIndex])} 
                         data-img={matchedProduct.imgSrc} 
                         className="inner-item-img" 
                         alt={matchedProduct.title}

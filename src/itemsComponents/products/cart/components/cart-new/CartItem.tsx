@@ -3,15 +3,16 @@ import React, { useEffect, useRef } from 'react';
 //import { CartItem as CartItemType } from '../types/cart.types';
 //import { useCart } from '../context/CartContext';
 import styles from './CartItem.module.css';
-import { ProductModel } from '../../../types/Product';
+import { Product } from '../../../types/Product';
 import { useNavigate } from 'react-router-dom';
 import { cleanPrice } from '../../../utils/filterUtils';
 import { useCartlist } from '../../context/CartlistContext';
 import { CartlistItem } from '../../type/CartlistItem';
 import { LoadingProduct } from '../../../LoadingProduct';
+import { getFullImageUrl } from '../../../utils/getFullImageUrl';
 
 interface CartCardProps {
-    product: ProductModel;
+    product: Product;
     quantity: number; /** challenge solved by adding quantity as props, type: number */
     currency?: string;
     onItemId: (id: string) => void;
@@ -61,7 +62,7 @@ const CartItem: React.FC<CartCardProps> = ({
 
   return (
     <div className={styles.cartItem}>
-      <img src={product.imgSrc[0]} alt={product.title} className={styles.itemImage} 
+      <img src={getFullImageUrl(product.imgSrc[0])} alt={product.title} className={styles.itemImage} 
           onClick={()=> getItemId(product.id)}/>
       <div className={styles.itemDetails} 
           onClick={()=> getItemId(product.id)}>

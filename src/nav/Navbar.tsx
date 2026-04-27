@@ -1,10 +1,10 @@
 import React,{ useEffect, useState, useRef } from 'react';
 import './nav.css';
 import { getFilteredProducts } from '../itemsComponents/products/category-filter/filteredProducts';
-import { ProductCategory } from '../itemsComponents/products/types/Product';
+import { Product } from '../itemsComponents/products/types/Product';
 
 interface NavbarProps {
-  datas: ProductCategory[];
+  datas: Product[];
   onSelectedType: (type: string | null) => void;
   selectedType: string | null;
 }
@@ -153,13 +153,13 @@ const Navbar: React.FC<NavbarProps> = ({
     console.log(selectedType)
   }
 
-  const handleTypeClick=(type: string, e: React.MouseEvent<HTMLLIElement, MouseEvent>)=> {
+  const handleTypeClick=(type: string[], e: React.MouseEvent<HTMLLIElement, MouseEvent>)=> {
     e.preventDefault();
 
     const category = getFilteredProducts(datas, type);
 
     const timer = setTimeout(()=> {
-      onSelectedType(category.length > 0 ? type : null);
+      onSelectedType(category.length > 0 ? type[0] : null);
     }, 2000);
 
     return ()=> {
@@ -197,7 +197,7 @@ const Navbar: React.FC<NavbarProps> = ({
         <ul>
           {topIcons.map((item, index)=> (
                 <>
-                <li key={index} onClick={(e)=> handleTypeClick("item", e)}>
+                <li key={index} onClick={(e)=> handleTypeClick(["item"], e)}>
                   {<i className={item.iconClass}/>}
                   {/* {item.type.toUpperCase()} */}
                 {/*<a href={item.type} className="type-link" data-page-id="laptops">
@@ -254,9 +254,9 @@ const Navbar: React.FC<NavbarProps> = ({
             >
               {datas.map((item, index)=> (
                 <>
-                <li key={item.typeId} onClick={(e)=> handleTypeClick(item.type, e)}>
-                <a href={item.type} className="type-link" data-page-id="laptops">
-                  {item.type}
+                <li key={item.id} onClick={(e)=> handleTypeClick(item.category, e)}>
+                <a href={item.category[0]} className="type-link" data-page-id="laptops">
+                  {item.category[0].charAt(0).toUpperCase() + item.category[0].slice(1)}
                 </a>
               </li>
                 </>

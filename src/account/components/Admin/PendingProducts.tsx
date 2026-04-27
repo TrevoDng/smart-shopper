@@ -256,7 +256,7 @@ const PendingProducts: React.FC = () => {
                     <td className="title-cell">
                       <div className="product-info">
                         <div className="product-title">{product.title}</div>
-                        <div className="product-type">{product.mainType} / {product.subType}</div>
+                        <div className="product-type">{product.category[0]} / {product.category[1]}</div>
                       </div>
                     </td>
                     <td className="brand-cell">{product.brand}</td>
@@ -396,7 +396,7 @@ const PendingProducts: React.FC = () => {
                     </div>
                     <div className="detail-row">
                       <label>Category:</label>
-                      <span>{selectedProduct.mainType} / {selectedProduct.subType}</span>
+                      <span>{selectedProduct.category[0]} / {selectedProduct.category[1]}</span>
                     </div>
                     <div className="detail-row">
                       <label>Price:</label>

@@ -144,7 +144,7 @@ const OutOfStock: React.FC = () => {
                     <td className="product-cell">
                       <div className="product-info">
                         <div className="product-title">{product.title}</div>
-                        <div className="product-type">{product.mainType} / {product.subType}</div>
+                        <div className="product-type">{product.category[0]} / {product.category[1]}</div>
                       </div>
                     </td>
                     <td className="brand-cell">{product.brand}</td>

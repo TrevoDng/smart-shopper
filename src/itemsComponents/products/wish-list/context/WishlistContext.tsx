@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useMemo } from 'react';
 import { WishlistContextType, WishlistItem, WishlistState } from '../types/WishlistItem';
-import { ProductModel } from '../../types/Product';
+import { Product } from '../../types/Product';
 import { countFunction } from '../countFunction';
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
@@ -86,7 +86,7 @@ export const WishlistProvider: React.FC<{ children:
             console.log('wishlist was saved successfully!', JSON.stringify(wishlist.items));
          }, [wishlist]);
 
-         const addToWishlist = (product: ProductModel) => {
+         const addToWishlist = (product: Product) => {
             setWishlist(prev => {
                 if(!prev) return { items: [] };
 

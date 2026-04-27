@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react";
-import { ProductModel } from "../types/Product"
+import { Product } from "../types/Product"
 import { LoadingProduct } from "../LoadingProduct";
 
 import "./ProductsCads.css";
@@ -12,7 +12,7 @@ const ProductsCards: React.FC<ProductsCardsProps> =({
     product, 
     currency = "R ", 
     onItemId, 
-    onSelectedType, 
+  
     onLoading, 
     loading 
 })=> {
@@ -20,7 +20,7 @@ const ProductsCards: React.FC<ProductsCardsProps> =({
     const navigate = useNavigate();
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     
-    const getItemId =(type: string, id: string): void=> {
+    const getItemId =(category: string[], id: string): void=> {
         if(timeoutRef.current) clearTimeout(timeoutRef.current);
         onLoading(id);
         timeoutRef.current = setTimeout(() => {
@@ -40,8 +40,8 @@ const ProductsCards: React.FC<ProductsCardsProps> =({
 
     return (
         <div 
-      className={`item ${product.type}-item ${loading === product.id ? 'disabled' : ''}`} 
-      onClick={() => getItemId(product.type, product.id)}
+      className={`item ${product.category}-item ${loading === product.id ? 'disabled' : ''}`} 
+      onClick={() => getItemId(product.category, product.id)}
     >
       {loading === product.id && (
         <LoadingProduct loadingClass={"loading-product"}/> // Replace with your actual LoadingAnimation component

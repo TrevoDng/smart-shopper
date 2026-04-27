@@ -1,48 +1,29 @@
-import React, { useState, createContext, useEffect } from 'react';
-//import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { BrowserRouter as Router, Routes, Route, Navigate, useParams, BrowserRouter } from 'react-router-dom';
-import { AuthProvider, useAuth } from './account/context/AuthContext'; //from './contexts/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { AuthProvider, useAuth } from './account/context/AuthContext';
 import AccountProfile from './account/components/customer/CustomerAccountProfile';
-
-//import Slider from './slider/Slider';
 import Slider from './slider/new-slider/Slider';
 import { SliderProvider, useSlider } from './slider/slidercontext/SliderContext';
 import PageNotFound from './pagenotfound/pagenotfound';
-import CategoryFilter from './itemsComponents/products/category-filter/CategoryFilter';
-import { combinedProducts, mostBoughtItems } from './itemsComponents/products/data/demoData';
 import { FooterComponent } from './footer/Footer';
-import { ProductCategory } from './itemsComponents/products/types/Product';
+import { Product } from './itemsComponents/products/types/Product';
 import TopNavbar from './nav/TopNavbar';
 import Footers from './footer/Footers';
-// import FilterSection from './itemsComponents/products/aside-filter-section/FilterSection';
-
 import './App.css';
-import './itemsComponents/products/ProductsPage.css';
 import RandomProductsPage from './itemsComponents/products/random-products-grid/RandomProductsPage';
 import WishListGrid from './itemsComponents/products/wish-list/components/wish-list-grid/WishListGrid';
 import { WishlistProvider } from './itemsComponents/products/wish-list/context/WishlistContext';
 import SingleOpenedProductPage from './itemsComponents/products/single-opened-product/SingleOpenedProductPage';
 import { BackButton } from './itemsComponents/products/back-button/BackButton';
-import SearchProductsGrid from './search/SearchProductsGrid';
-import CartlistGrid from './itemsComponents/products/cart/components/CartlistGrid';
 import { CartlistProvider } from './itemsComponents/products/cart/context/CartlistContext';
-import TypeFilter from './itemsComponents/products/aside-filter-section/TypeFilter';
-import RandomProductsGrid from './itemsComponents/products/random-products-grid/RandomProductsGrid';
-import RandomProductsPageTwo from './itemsComponents/products/random-products-grid/RandomProductsTwo';
-import Navbar from './nav/Navbar';
-import MyComponent from './itemsComponents/products/MyComponent';
-import ProductsPage from './itemsComponents/products/ProductsPage';
 import ProductsCards from './itemsComponents/products/product-card/ProductsCads';
-import CheckoutPage from './itemsComponents/products/cart/checkout/CheckoutPage';
 import Cart from './itemsComponents/products/cart/components/cart-new/Cart';
-import PaymentMethodSelector, { PaymentMethod } from './itemsComponents/products/cart/checkout/all-payments-options/PaymentMethodSelector';
+import PaymentMethodSelector from './itemsComponents/products/cart/checkout/all-payments-options/PaymentMethodSelector';
 import About from './about/About';
 import Deals from './itemsComponents/products/deals/Deals';
 import AddProduct from './account/components/Employee/AddProduct';
-//import { UnifiedAuthProvider, useUnifiedAuth } from './styles/context/unifiedAuthContext';
 
 // Auth components
-//import RoleSelector from './components/Auth/RoleSelector';
 import CustomerLogin from './account/components/Auth/customer/CustomerLogin'; 
 import CustomerRegister from './account/components/Auth/customer/CustomerRegister';
 import EmployeeLogin from './account/components/Auth/employee/EmployeeLogin';
@@ -76,40 +57,15 @@ import Enquiries from './account/components/Admin/Enquiries';
 import Suggestions from './account/components/Admin/Suggestions';
 import AdminAccountProfile from './account/components/Admin/AdminAccountProfile';
 import Sales from './account/components/Admin/Sales';
-import { ProductDataProvider, useProductData } from './itemsComponents/context/ProductDataContext';
+import ProductPage from './itemsComponents/products/random-products-grid/ProductPage';
+import { productsApi } from './services/productsApi';
+import { useDiscounts } from './hooks/useDiscounts';
+import CategoryMainFilter from './itemsComponents/products/category-filter/CategoryMainFilter';
 
 const SliderConditionalRenderer: React.FC = () => {
-	const { isSliderVisible } = useSlider();
-	return isSliderVisible ? <Slider /> : null;
-} 
-
-
-
-interface RandomProductsPageProps {
-  categories: ProductCategory[];
-  searchedResults: ProductCategory[];
-	setSearchQuery: (query: string)=> void;
-	searchedQuery: string;
-  onSelectedType: (type: string | null) => void;
-  selectedItemId: string | null;
-  selectedType: string | null;
-  onItemId: (id: string) => void;
-  onLoading: (id: string | null) => void;
-  loading?: string | null; 
-}
-
-interface FilteredProductsProps {
-	categories: ProductCategory[];
-	searchedResults: ProductCategory[];
-  onSelectedType: (type: string | null) => void;
-  selectedItemId: string | null;
-  selectedType: string | null;
-  onItemId: (id: string) => void;
-  onLoading: (id: string | null) => void;
-  loading?: string | null;
-}
-
-//login functions
+  const { isSliderVisible } = useSlider();
+  return isSliderVisible ? <Slider /> : null;
+};
 
 // Protected route component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -131,437 +87,468 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? <Navigate to="/account" /> : <>{children}</>;
 };
-//end of login functions
 
-const ProductMainPage: React.FC<RandomProductsPageProps> =({
-	categories,
-	searchedResults,
-	setSearchQuery,
-	searchedQuery,
-    onSelectedType, 
-	selectedItemId,
-    selectedType,
-    onItemId, 
-    onLoading, 
-    loading 
-	})=> {
+interface ProductMainPageProps {
+  products: Product[];
+  searchedResults: Product[];
+  resultsMatch: boolean;
+  onDiscountedPrice: (productId: string, originalPrice: number) => { discountedPrice: number, discountAmount: number } | null;
+  fetchDiscounts: (id: string[]) => Promise<void>;
+  setSearchQuery: (query: string) => void;
+  searchedQuery: string;
+  selectedCategories: string[];
+  setSelectedCategories: (categories: string[]) => void;
+  selectedBrands: string[];
+  setSelectedBrands: (brands: string[]) => void;
+  priceRange: [number, number];
+  setPriceRange: (range: [number, number]) => void;
+  selectedItemId: string | null;
+  onItemId: (id: string) => void;
+  onLoading: (id: string | null) => void;
+  loading?: string | null;
+}
 
-		return (
-			<div>
-			<div className='main-page-content'>
-			<div className='products-main-container-cover'>
+const ProductMainPage: React.FC<ProductMainPageProps> = ({
+  products,
+  searchedResults,
+  resultsMatch,
+  onDiscountedPrice,
+  fetchDiscounts,
+  setSearchQuery,
+  searchedQuery,
+  selectedCategories,
+  setSelectedCategories,
+  selectedBrands,
+  setSelectedBrands,
+  priceRange,
+  setPriceRange,
+  selectedItemId,
+  onItemId,
+  onLoading,
+  loading,
+}) => {
+  return (
+    <div>
+      <div className='main-page-content'>
+        <div className='products-main-container-cover'>
+          {searchedQuery.length < 3 ? (
+            <ProductPage
+              products={products}
+              searchedQuery={searchedQuery}
+              setSearchQuery={setSearchQuery}
+              resultsMatch={resultsMatch}
+              selectedCategories={selectedCategories}
+              setSelectedCategories={setSelectedCategories}
+              selectedBrands={selectedBrands}
+              setSelectedBrands={setSelectedBrands}
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              onDiscountedPrice={onDiscountedPrice}
+              fetchDiscounts={fetchDiscounts}
+              onItemId={onItemId}
+              onLoading={onLoading}
+              loading={loading}
+            />
+          ) : (
+                        <ProductPage
+              products={searchedResults}
+              setSearchQuery={setSearchQuery}
+              searchedQuery={searchedQuery}
+              searchedResults={searchedResults}
+              resultsMatch={resultsMatch}
+              selectedCategories={selectedCategories}
+              setSelectedCategories={setSelectedCategories}
+              selectedBrands={selectedBrands}
+              setSelectedBrands={setSelectedBrands}
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              onDiscountedPrice={onDiscountedPrice}
+              fetchDiscounts={fetchDiscounts}
+              onItemId={onItemId}
+              onLoading={onLoading}
+              loading={loading}
+            />
+          )}
+        </div>
+      </div>
 
-			{searchedQuery.length < 3 ?
-				(<RandomProductsPage
-						categories={categories}
-						onSelectedType={onSelectedType} 
-						selectedType={selectedType}
-						onItemId={onItemId}
-						onLoading={onLoading}
-						loading={loading}
-					/>) :
-			 
-				<RandomProductsPage
-						categories={searchedResults}
-						onSelectedType={onSelectedType} 
-						selectedType={selectedType}
-						onItemId={onItemId}
-						onLoading={onLoading}
-						loading={loading}
-					/>}
-			</div>
-		</div>
+      {/* Most bought products */}
+      <div className='most-bought-items-section'>
+        <h2>Most bought items</h2>
+        <div className='most-bought-items-container'>
+          {products.slice(0, 6).map(product => (
+            <ProductsCards
+              key={product.id}
+              product={{
+                ...product,
+                currency: product.currency,
+                imgSrc: product.imgSrc,
+              }}
+              onItemId={onItemId}
+              onLoading={onLoading}
+              loading={loading}
+            />
+          ))}
+        </div>
+      </div>
 
-			{/**most bought products */}
-			<div className='most-bought-items-section'>
-				<h2>Most bought items</h2>
-				<div className='most-bought-items-container'>
-					{categories.map(category => (
-						category.models.map(product => (
-							<ProductsCards
-							key={product.id}
-          product={{
-            ...product,
-            currency: product.currency,
-            imgSrc: product.imgSrc,
-          }}
-          onItemId={onItemId}
-          onSelectedType={onSelectedType}
-          //setSearchQuery={setSearchQuery}
-          //searchQuery={searchQuery}
-          onLoading={onLoading}
-          loading={loading} />
-						))
-					))}
-				</div>
-			</div>
-
-			{/**payment options */}
-			    <div className="payment-section">
+      {/* Payment options */}
+      <div className="payment-section">
         <h2>WE ACCEPT:</h2>
         <div className="payment-grid">
-			<img src='https://firebasestorage.googleapis.com/v0/b/sipmab-9ab74.appspot.com/o/aisle-net%2Fpayments-icons.jpg?alt=media&token=f7ffcc18-b89e-47b3-a07d-e80ef2a7f9cc' />
-
-			{/*
-            <div className="payment-item visa">VISA
-				<i className="fa-brands fa-google-pay"></i>
-			</div>
-            <div className="payment-item edgars">EDGARS</div>
-            <div className="payment-item card">0000 0000 0000 0000</div>
-            <div className="payment-item pay"><i className="fab fa-cc-visa"></i>
-            </div>
-            <div className="payment-item pay">
-            <i className="fab fa-cc-apple-pay"></i></div>
-            <div className="payment-item pay"><i className="fab fa-cc-mastercard"></i>
-            </div>
-            <div className="payment-item rcs">RCS</div>
-            <div className="payment-item payjustnow"><i className="fab fa-cc-paypal"></i></div>
-            <div className="payment-item xpayflex">Xpayflex</div>
-            <div className="payment-item mobicred">mobicred</div>
-            <div className="payment-item happypay">Happy Pay</div>
-            <div className="payment-item bank">BANK</div>
-            <div className="payment-item payby">pay by</div>
-            <div className="payment-item zapper">zapper</div> */}
+            <i className="fab fa-cc-visa"></i>
+            <i className="fab fa-cc-mastercard"></i>
+            <i className="fab fa-cc-paypal"></i>
+            <i className="fab fa-cc-apple-pay"></i>
         </div>
+      </div>
     </div>
-		</div>
-		)
-	}
-
-
-	const CreatePaymentMethodSelector=()=> {
-
-		const handleSelect=()=> {
-			console.log("selected");
-		}
-		return (<PaymentMethodSelector 
-					onSelect={handleSelect}
-  					isOpen = {true}/>)
-	}
-
-interface ProductsComponentProps {
-	category: ProductCategory[];
-
-	searchedResults: ProductCategory[];
-	setSearchQuery: (query: string)=> void;
-	searchedQuery: string;
-	selectedType: string | null;
-	setSelectedType: (id: string | null)=> void;
-	selectedItemId: string | null;
-	setSelectedItemId: (id: string | null)=> void;
-	setTypeById: (id: number | null)=> void;
-	onLoading: (id: string | null)=> void;
-	loading?: string | null;
-}
-
-const MainPageController: React.FC<ProductsComponentProps>=({
-	category,
-	searchedResults,
-	setSearchQuery,
-	searchedQuery,
-	selectedType, 
-	setSelectedType,
-	selectedItemId, 
-	setSelectedItemId,
-	setTypeById,
-	onLoading,
-	loading, 
-})=> {
-		const [showCart, setShowCart] = useState(false);
-
-const WishlistPage =()=> {
-	return (
-		
-			<WishListGrid  
-    				onItemId={setSelectedItemId}
-    				onLoading={onLoading}
-    				loading={loading} />			
-	)
-}
-
-const CartlistPage=()=> {
-	return (
-		<Cart 
-			onItemId={setSelectedItemId}
-    		onLoading={onLoading}
-    		loading={loading} />
-	)
-}
-
-
-  return (
-    	<Router>
-
-			{ (selectedItemId) && 
-		   ( <BackButton 
-			  selectedType={selectedType}
-			  selectedItemId={selectedItemId}
-			  onItemId={setSelectedItemId}
-			  onSelectedType={setSelectedType}
-			  onTypeById={setTypeById}
-			  onShowCart={setShowCart}
-			  showCart={showCart}
-			/>)
-			}
-
-		<Routes>
-		<Route path="/" element={<ProductMainPage 
-		categories={category}
-		searchedResults={searchedResults}
-		setSearchQuery={setSearchQuery}
-		searchedQuery={searchedQuery}
-				onSelectedType={setSelectedType} 
-          selectedType={selectedType}   
-          onItemId={setSelectedItemId} 
-		  selectedItemId={selectedItemId}
-          onLoading={onLoading}
-          loading={loading}/>} />
-
-		  <Route path='/login' element={
-			<PublicRoute>
-				<CustomerLogin />
-			</PublicRoute>
-		  } />
-		  <Route path="/register" element={
-        <PublicRoute>
-          <CustomerRegister />
-        </PublicRoute>
-      } />
-      <Route path="/account" element={
-        <ProtectedRoute>
-          <AccountProfile />
-        </ProtectedRoute>
-      } />
-		{
-		<Route path='/single-product-page/:id' element={<SingleOpenedProductPage 
-    		itemsData={category} itemId={selectedItemId} setSelectedItemId={setSelectedItemId}/>} />
-	}
-	{/*
-		<Route path='/categories' element={<FilteredProductsPage 
-			categories={combinedProducts}
-			searchedResults={searchedResults}
-			onSelectedType={setSelectedType}
-			selectedType={selectedType}
-			onItemId={setSelectedItemId}
-			selectedItemId={selectedItemId}
-			onLoading={onLoading}
-			loading={loading}/>} />
-			*/}
-		
-		<Route path='/add-product' element={<AddProduct />} />
-		<Route path='/wishlist' element={<WishlistPage />} />
-		<Route path='/cart' element={<CartlistPage />} />
-		<Route path='/checkout' element={<CreatePaymentMethodSelector />} />
-		<Route path='/deals' element={<Deals />} />
-		<Route path='/about' element={<About />} />
-		<Route path="*" element={<PageNotFound />} />
-		<Route path="/login/employee" element={<EmployeeLogin />} />	
-		<Route path="/register/employee" element={<EmployeeRegister />} />
-		<Route path="/employee/account-profile" element={<EmployeeAccountProfile />} />
-		<Route path="/employee/add-product" element={<AddProduct />} />
-		<Route path="/employee/my-products" element={<MyProducts />} />
-		<Route path='/employee/products-sales' element={<ProductsSales />} />
-		<Route path="/employee/my-performance" element={<MyPerformance />} />
-		<Route path='/employee/mainpage' element={<EmployeeMainPage />} />
-		<Route path='/employee/dashboard' element={<EmployeeDashboard />} />
-		<Route path="/employee/enquiries" element={<EmployeeEnquiries />} />
-		<Route path="/employee/suggestions" element={<EmployeeSuggestions />} />
-		
-		<Route path="/login/admin" element={<AdminLogin />} />
-		<Route path='/admin/dashboard' element={<AdminDashboard />} />
-		<Route path='/admin/mainpage' element={<AdminMainPage />} />
-		<Route path='/admin/management' element={<AdminManagement />} />
-		<Route path='/admin/setup' element={<AdminSetup />} />
-		<Route path='/admin/registration-requests' element={<RegistrationRequests />} />
-		<Route path='/admin/pending-products' element={<PendingProducts />} />
-		<Route path='/admin/clients' element={<Clients />} />
-		<Route path='/admin/employees' element={<Employees />} />
-		<Route path='/admin/employee-performance' element={<EmployeesPerformance />} />
-		<Route path='/admin/products' element={<Products />} />
-		<Route path='/admin/products-performance' element={<ProductsPerformance />} />
-		<Route path='/admin/products-sales' element={<Sales />} />
-		<Route path='/admin/out-of-stock' element={<OutOfStock />} />
-		<Route path='/admin/enquiries' element={<Enquiries />} />
-		<Route path='/admin/suggestions' element={<Suggestions />} />
-		<Route path='/admin/admin-profile' element={<AdminAccountProfile />} />
-		
-		<Route path="/login" element={<CustomerLogin />} />
-		
-		</Routes>
-	</Router>
   );
-}
-
-// This is the inner component that uses the product data
-const AppContent: React.FC = () => {
-	const [selectedType, setSelectedType] = useState<string | null>(null);
-	const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-	const [typeById, setTypeById] = useState<number | null>(null);
-	const [showSingleItem, setShowSingleItem] = useState(false);
-    const [searchQuery, setSearchQuery] = React.useState<string>('');
-	const [loadingDelay, setLoadingDelay] = useState<string | null>(null);
-
-	const { id } = useParams();
-	
-	// Get real data from database - NOW THIS WORKS because we're inside the provider
-	const { categories: dbCategories, loading: dbLoading, error: dbError } = useProductData();
-	const [searchResults, setSearchResults] = useState<ProductCategory[]>([]);
-
-	// Set selected item ID from URL params
-	useEffect(() => {
-		if (id) {
-			setSelectedItemId(id);
-		}
-	}, [id]);
-
-	// Search function using real data
-	useEffect(() => {
-		const performSearch = async () => {
-			if (searchQuery.length < 2) {
-				setSearchResults([]);
-				return;
-			}
-			
-			// Search through real database products
-			const allProducts = dbCategories.flatMap(cat => cat.models);
-			const searchTerm = searchQuery.toLowerCase().trim();
-			
-			const filteredModels = allProducts.filter(product => 
-				product.title.toLowerCase().includes(searchTerm) ||
-				product.brand.toLowerCase().includes(searchTerm) ||
-				product.description.toLowerCase().includes(searchTerm)
-			);
-			
-			// Group by type/category
-			const categoryMap = new Map<string, ProductCategory>();
-			filteredModels.forEach(product => {
-				if (!categoryMap.has(product.type)) {
-					const originalCat = dbCategories.find(cat => cat.type === product.type);
-					categoryMap.set(product.type, {
-						type: product.type,
-						icon: originalCat?.icon || '',
-						title: originalCat?.title || product.type,
-						typeId: originalCat?.typeId || categoryMap.size + 1,
-						models: []
-					});
-				}
-				categoryMap.get(product.type)!.models.push(product);
-			});
-			
-			setSearchResults(Array.from(categoryMap.values()));
-		};
-		
-		performSearch();
-	}, [searchQuery, dbCategories]);
-
-	// Show loading state while fetching database products
-	if (dbLoading) {
-		return (
-			<div className="loading-container" style={{ textAlign: 'center', padding: '50px' }}>
-				<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-				<p>Loading products from database...</p>
-			</div>
-		);
-	}
-
-	if (dbError) {
-		return (
-			<div className="error-container" style={{ textAlign: 'center', padding: '50px' }}>
-				<h2>Error Loading Products</h2>
-				<p>{dbError}</p>
-				<button onClick={() => window.location.reload()}>Retry</button>
-			</div>
-		);
-	}
-	
-	return (
-		<ThemeProvider>
-			<AuthProvider>
-				<SliderProvider defaultVisible={true}>
-					<div className='website-main-container'>
-						<CartlistProvider>
-							<WishlistProvider>
-								<TopNavbar 
-									setSearchQuery={setSearchQuery}
-									searchQuery={searchQuery}
-									onItemId={setSelectedItemId}
-									onLoading={setLoadingDelay}
-									loading={loadingDelay}
-								/>
-								<SliderConditionalRenderer />
-								<main className='main-content-container'>
-									<AuthProvider>
-										<MainPageController 
-											category={dbCategories}  
-											searchedResults={searchResults}
-											setSearchQuery={setSearchQuery}
-											searchedQuery={searchQuery}
-											selectedType={selectedType} 
-											setSelectedType={setSelectedType}
-											selectedItemId={selectedItemId}
-											setSelectedItemId={setSelectedItemId}
-											setTypeById={setTypeById}
-											onLoading={setLoadingDelay}
-											loading={loadingDelay}
-											// Pass dbCategories here
-										/>
-									</AuthProvider>
-									<FooterComponent />
-									<Footers />
-								</main>
-							</WishlistProvider> 
-						</CartlistProvider>
-					</div>
-				</SliderProvider> 
-			</AuthProvider>
-		</ThemeProvider>
-	);
 };
 
-// This is the outer component that provides the product data
+const CreatePaymentMethodSelector = () => {
+  const handleSelect = () => {
+    console.log("selected");
+  };
+  return <PaymentMethodSelector onSelect={handleSelect} isOpen={true} />;
+};
+
+interface MainPageControllerProps {
+  products: Product[];
+  searchedResults: Product[];
+  resultsMatch: boolean;
+  onDiscountedPrice: (productId: string, originalPrice: number) => { discountedPrice: number, discountAmount: number } | null;
+  fetchDiscounts: (id: string[]) => Promise<void>;
+  setSearchQuery: (query: string) => void;
+  searchedQuery: string;
+  selectedCategories: string[];
+  setSelectedCategories: (categories: string[]) => void;
+  selectedBrands: string[];
+  setSelectedBrands: (brands: string[]) => void;
+  priceRange: [number, number];
+  setPriceRange: (range: [number, number]) => void;
+  selectedItemId: string | null;
+  setSelectedItemId: (id: string | null) => void;
+  setTypeById: (id: number | null) => void;
+  onLoading: (id: string | null) => void;
+  loading?: string | null;
+}
+
+const MainPageController: React.FC<MainPageControllerProps> = ({
+  products,
+  searchedResults,
+  resultsMatch,
+  onDiscountedPrice,
+  fetchDiscounts,
+  setSearchQuery,
+  searchedQuery,
+  selectedCategories,
+  setSelectedCategories,
+  selectedBrands,
+  setSelectedBrands,
+  priceRange,
+  setPriceRange,
+  selectedItemId,
+  setSelectedItemId,
+  setTypeById,
+  onLoading,
+  loading,
+}) => {
+  const [showCart, setShowCart] = useState(false);
+
+  const WishlistPage = () => {
+    return (
+      <WishListGrid  
+        onItemId={setSelectedItemId}
+        onLoading={onLoading}
+        loading={loading}
+      />      
+    );
+  };
+
+  const CartlistPage = () => {
+    return (
+      <Cart 
+        onItemId={setSelectedItemId}
+        onLoading={onLoading}
+        loading={loading}
+      />
+    );
+  };
+
+  return (
+    <Router>
+      {selectedItemId && (
+        <BackButton 
+          selectedItemId={selectedItemId}
+          onItemId={setSelectedItemId}
+          onShowCart={setShowCart}
+          showCart={showCart}
+        />
+      )}
+
+      <Routes>
+        <Route path="/" element={
+          <ProductMainPage 
+            products={products}
+            searchedResults={searchedResults}
+            resultsMatch={resultsMatch}
+            onDiscountedPrice={onDiscountedPrice}
+            fetchDiscounts={fetchDiscounts}
+            setSearchQuery={setSearchQuery}
+            searchedQuery={searchedQuery}
+            selectedCategories={selectedCategories}
+            setSelectedCategories={setSelectedCategories}
+            selectedBrands={selectedBrands}
+            setSelectedBrands={setSelectedBrands}
+            priceRange={priceRange}
+            setPriceRange={setPriceRange}
+            selectedItemId={selectedItemId}
+            onItemId={setSelectedItemId}
+            onLoading={onLoading}
+            loading={loading}
+          />
+        } />
+
+        <Route path='/login' element={
+          <PublicRoute>
+            <CustomerLogin />
+          </PublicRoute>
+        } />
+        
+        <Route path="/register" element={
+          <PublicRoute>
+            <CustomerRegister />
+          </PublicRoute>
+        } />
+        
+        <Route path="/account" element={
+          <ProtectedRoute>
+            <AccountProfile />
+          </ProtectedRoute>
+        } />
+        
+        <Route path='/single-product-page/:id' element={
+          <SingleOpenedProductPage 
+            itemsData={products}
+            itemId={selectedItemId}
+            setSelectedItemId={setSelectedItemId}
+          />
+        } />
+        
+        <Route path='/add-product' element={<AddProduct />} />
+        <Route path='/wishlist' element={<WishlistPage />} />
+        <Route path='/cart' element={<CartlistPage />} />
+        <Route path='/checkout' element={<CreatePaymentMethodSelector />} />
+        <Route path='/deals' element={<Deals />} />
+        <Route path='/about' element={<About />} />
+        <Route path="*" element={<PageNotFound />} />
+        
+        {/* Employee Routes */}
+        <Route path="/login/employee" element={<EmployeeLogin />} />	
+        <Route path="/register/employee" element={<EmployeeRegister />} />
+        <Route path="/employee/account-profile" element={<EmployeeAccountProfile />} />
+        <Route path="/employee/add-product" element={<AddProduct />} />
+        <Route path="/employee/my-products" element={<MyProducts />} />
+        <Route path='/employee/products-sales' element={<ProductsSales />} />
+        <Route path="/employee/my-performance" element={<MyPerformance />} />
+        <Route path='/employee/mainpage' element={<EmployeeMainPage />} />
+        <Route path='/employee/dashboard' element={<EmployeeDashboard />} />
+        <Route path="/employee/enquiries" element={<EmployeeEnquiries />} />
+        <Route path="/employee/suggestions" element={<EmployeeSuggestions />} />
+        
+        {/* Admin Routes */}
+        <Route path="/login/admin" element={<AdminLogin />} />
+        <Route path='/admin/dashboard' element={<AdminDashboard />} />
+        <Route path='/admin/mainpage' element={<AdminMainPage />} />
+        <Route path='/admin/management' element={<AdminManagement />} />
+        <Route path='/admin/setup' element={<AdminSetup />} />
+        <Route path='/admin/registration-requests' element={<RegistrationRequests />} />
+        <Route path='/admin/pending-products' element={<PendingProducts />} />
+        <Route path='/admin/clients' element={<Clients />} />
+        <Route path='/admin/employees' element={<Employees />} />
+        <Route path='/admin/employee-performance' element={<EmployeesPerformance />} />
+        <Route path='/admin/products' element={<Products />} />
+        <Route path='/admin/products-performance' element={<ProductsPerformance />} />
+        <Route path='/admin/products-sales' element={<Sales />} />
+        <Route path='/admin/out-of-stock' element={<OutOfStock />} />
+        <Route path='/admin/enquiries' element={<Enquiries />} />
+        <Route path='/admin/suggestions' element={<Suggestions />} />
+        <Route path='/admin/admin-profile' element={<AdminAccountProfile />} />
+        
+        <Route path="/login" element={<CustomerLogin />} />
+      </Routes>
+    </Router>
+  );
+};
+
+// Main AppContent component - Single source of truth for all state
+const AppContent: React.FC = () => {
+  // Product data states
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [resultsMatch, setResultsMatch] = useState<boolean>(true);
+  //let resultsMatch = true;
+  // Filter states - ALL STATE LIVES HERE (single source of truth)
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 20000]);
+  
+  // UI states
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [typeById, setTypeById] = useState<number | null>(null);
+  const [loadingDelay, setLoadingDelay] = useState<string | null>(null);
+  
+  const { getDiscountedPrice, fetchDiscounts } = useDiscounts();
+  const { id } = useParams();
+
+  // Load products from API
+  useEffect(() => {
+    const loadProducts = async () => {
+      setLoading(true);
+      try {
+        const response = await productsApi.getPublicApprovedProducts();
+        const transformedProducts = response.products.map(product => ({
+          ...product,
+          price: String(product.price)
+        }));
+        setProducts(transformedProducts);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProducts();
+  }, []);
+
+  // Set selected item ID from URL params
+  useEffect(() => {
+    if (id) {
+      setSelectedItemId(id);
+    }
+  }, [id]);
+
+  // Search function
+  useEffect(() => {
+    const performSearch = () => {
+      if (searchQuery.length < 3) {
+        setSearchResults([]);
+        return;
+      }
+      
+      const searchTerm = searchQuery.toLowerCase().trim();
+      const filtered = products.filter(product => 
+        product.title.toLowerCase().includes(searchTerm) ||
+        product.brand.toLowerCase().includes(searchTerm) ||
+        product.description.toLowerCase().includes(searchTerm) ||
+        product.category.some(cat => cat.toLowerCase().includes(searchTerm))
+      );
+      
+      setSearchResults(filtered);
+
+       // Set resultsMatch based on whether we found anything
+    if (searchTerm.length >= 3 && filtered.length === 0) {
+       //resultsMatch = false;
+      setResultsMatch(false);
+
+      console.log("Filtered results:", filtered, "for search term:", searchTerm);
+    } else {
+      //resultsMatch = true;
+      setResultsMatch(true);
+    }
+    };
+
+    
+    performSearch();
+  }, [searchQuery, products]);
+
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="loading-container" style={{ textAlign: 'center', padding: '50px' }}>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+        <p>Loading products from database...</p>
+      </div>
+    );
+  }
+
+  /*
+  if (searchQuery.length >= 2 && searchResults.length === 0) {
+        resultsMatch = false;
+    }
+    */
+
+  if (error) {
+    return (
+      <div className="error-container" style={{ textAlign: 'center', padding: '50px' }}>
+        <h2>Error Loading Products</h2>
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()}>Retry</button>
+      </div>
+    );
+  }
+  
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <SliderProvider defaultVisible={true}>
+          <div className='website-main-container'>
+            <CartlistProvider>
+              <WishlistProvider>
+                <TopNavbar 
+                  setSearchQuery={setSearchQuery}
+                  searchQuery={searchQuery}
+                  onItemId={setSelectedItemId}
+                  onLoading={setLoadingDelay}
+                  loading={loadingDelay}
+                />
+                
+                <SliderConditionalRenderer />
+                <CategoryMainFilter datas={products} selectedCategory={selectedCategories} onSelectedCategory={setSelectedCategories}/>
+                <main className='main-content-container'>
+                  <AuthProvider>
+                    <MainPageController 
+                      products={products}
+                      searchedResults={searchResults}
+                      resultsMatch={resultsMatch}
+                      //setResultsMatch={setResultsMatch}
+                      onDiscountedPrice={getDiscountedPrice}
+                      fetchDiscounts={fetchDiscounts}
+                      setSearchQuery={setSearchQuery}
+                      searchedQuery={searchQuery}
+                      selectedCategories={selectedCategories}
+                      setSelectedCategories={setSelectedCategories}
+                      selectedBrands={selectedBrands}
+                      setSelectedBrands={setSelectedBrands}
+                      priceRange={priceRange}
+                      setPriceRange={setPriceRange}
+                      selectedItemId={selectedItemId}
+                      setSelectedItemId={setSelectedItemId}
+                      setTypeById={setTypeById}
+                      onLoading={setLoadingDelay}
+                      loading={loadingDelay}
+                    />
+                  </AuthProvider>
+                  <FooterComponent />
+                  <Footers />
+                </main>
+              </WishlistProvider> 
+            </CartlistProvider>
+          </div>
+        </SliderProvider> 
+      </AuthProvider>
+    </ThemeProvider>
+  );
+};
+
+// Main App component
 const App: React.FC = () => {
-	return (
-		<ProductDataProvider>
-			<AppContent />
-		</ProductDataProvider>
-	);
+  return <AppContent />;
 };
 
 export default App;
-
-/**
- * 
-	const searchProducts =(query: string, products: ProductCategory[]): ProductCategory[] => {
-		if(query.length <= 2) return [];
-
-		const searchTerm = query.toLowerCase().trim();
-
-		return products.map(product => {
-			const categoryMatch = [product.type, product.title].some(field => 
-				field.toLowerCase().includes(searchTerm)
-			);
-
-			const modelMatch = product.models.filter(model => [model.type, model.model, model.description /*, model.longDescription*///]
-			//	.some(field => field.toLowerCase().includes(searchTerm))
-			//);
-
-			/*
-			if(categoryMatch) {
-				return { ...product, models: product.models }
-		<Route path='/products' element={<ProductMainMapge />} />
-			}
-
-			if (modelMatch.length > 0) {
-				return { ...product, models: modelMatch }
-			}
-
-			return null;
-*/
-/*
-			return categoryMatch || modelMatch.length > 0 
-			? {...product, models: categoryMatch ? product.models : modelMatch} 
-			: null; 
-		})
-		.filter(Boolean) as ProductCategory[];
-	};
- */

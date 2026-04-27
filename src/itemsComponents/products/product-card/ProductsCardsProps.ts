@@ -1,10 +1,10 @@
-import { ProductModel } from "../types/Product";
+import { Product } from "../types/Product";
 
  interface ProductsCardsProps {
-    product: ProductModel;
+    product: Product;
     currency?: string;
     onItemId: (id: string) => void;
-    onSelectedType: (type: string) => void;
+    //onSelectedCategory: (category: string) => void;
     onLoading: (id: string | null) => void;
     loading?: string | null;   
 }

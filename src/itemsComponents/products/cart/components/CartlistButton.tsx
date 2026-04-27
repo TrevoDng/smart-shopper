@@ -1,10 +1,10 @@
 import { useSlider } from "../../../../slider/slidercontext/SliderContext";
-import { ProductModel } from "../../types/Product";
+import { Product } from "../../types/Product";
 import { useCartlist } from "../context/CartlistContext";
 import './CartlistButton.css';
 
 interface CartlistButtonProps {
-    product: ProductModel;
+    product: Product;
     size?: 'sm' | 'md' | 'lg';
     className?: string;
 }
@@ -50,7 +50,7 @@ export const CartlistButton: React.FC<CartlistButtonProps>=({
             add-to-cart-btn ${isCartlisted ? 'cartlist-active' : 'add-to-cart-btn'}
           `}
           aria-label={isCartlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-        >+ Cart
+        >
             <i className="fas fa-shopping-cart"></i>
             {/*
           <Heart 

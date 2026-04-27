@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import './ImagePopup.css';
+import { getFullImageUrl } from "../utils/getFullImageUrl";
 
 interface ImagePopupProps {
     images: string[];
@@ -107,7 +108,7 @@ const ImagePopup: React.FC<ImagePopupProps>=({
         {images.map((src, index) => (
           <img
             key={`${src}-${index}`}  // Combine src and index to ensure uniqueness
-            src={src}
+            src={getFullImageUrl(src) || src} // Fallback to original src if getFullImageUrl returns empty
             className={`popup-img ${
               index === currentIndex ? 'active' :
               index === (currentIndex + 1) % images.length ? 'next' :

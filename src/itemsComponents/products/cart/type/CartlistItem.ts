@@ -1,8 +1,8 @@
-import { ProductModel } from "../../types/Product";
+import { Product } from "../../types/Product";
 
 export interface CartlistItem {
     id: string;
-    product: ProductModel;
+    product: Product;
     addedAt: Date;
     quantity: number;
 }
@@ -13,7 +13,7 @@ export interface CartlistState {
 
 export type CartlistContextType = {
     cartlist: CartlistState;
-    addToCartlist: (product: ProductModel)=> void;
+    addToCartlist: (product: Product)=> void;
     removeFromCartlist: (productId: string)=> void;
     updateQuantity: (productId: string, newQuantity: number)=> void;
     isInCartlist: (ProdcutId: string)=> boolean;

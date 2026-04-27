@@ -42,6 +42,9 @@ const EmployeesPerformance: React.FC = () => {
         setEmployeeProducts(productsList);
         setFilteredData(productsList);
       } else {
+
+        setEmployeeProducts(sampleData);
+        setFilteredData(sampleData);
         setError(data.message || 'Failed to fetch employee performance data');
       }
     } catch (err: any) {

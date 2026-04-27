@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { productsApi, Product } from '../../../services/productsApi';
 import AdminLayout from '../layout/AdminLayout';
+import AddIcon from '@mui/icons-material/Add';
+import AddDiscountModal from '../common/AddDiscountModal';
 import './Products.css';
 
 const Products: React.FC = () => {
@@ -15,6 +17,7 @@ const Products: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [total, setTotal] = useState(0);
+  const [selectedProductForDiscount, setSelectedProductForDiscount] = useState<{ id: string; title: string } | null>(null);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -187,7 +190,7 @@ const Products: React.FC = () => {
                     <td className="product-title-cell">
                       <div className="product-info">
                         <div className="product-title">{product.title}</div>
-                        <div className="product-type">{product.mainType} / {product.subType}</div>
+                        <div className="product-type">{product.category[0]} / {product.category[1]}</div>
                       </div>
                     </td>
                     <td className="brand-cell">{product.brand}</td>
@@ -206,6 +209,15 @@ const Products: React.FC = () => {
                       <span className={getStatusClass(product.status)}>
                         {getStatusText(product.status)}
                       </span>
+                    </td>
+                    <td className="align-center">
+                      <button
+                        onClick={() => setSelectedProductForDiscount({ id: product.id, title: product.title })}
+                        className="add-sale-btn"
+                        title="Add discount">
+                        <AddIcon fontSize="small" />
+                          Add Sale
+                        </button>
                     </td>
                   </tr>
                 ))
@@ -251,6 +263,18 @@ const Products: React.FC = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {selectedProductForDiscount && (
+          <AddDiscountModal
+            productId={selectedProductForDiscount.id}
+            productTitle={selectedProductForDiscount.title}
+            onClose={() => setSelectedProductForDiscount(null)}
+            onSuccess={() => {
+            // Refresh products or show success message
+            fetchProducts();
+          }}
+          />
         )}
       </div>
     </AdminLayout>

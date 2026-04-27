@@ -95,21 +95,18 @@
         }
 
         .payment-grid {
-          /*
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 1rem;
-            align-items: stretch;
-            */
+          
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            background-color: #0284c7;
         }
 
-        .payment-grid img {
-            width: 100%;
-            height: 350px;
-            object-fit: contain;
-
+        .payment-grid i {
+            width: 200px;
+            height: 200px;
+            font-size: 100px;
+            color: #2563eb;
         }
 
         .payment-item {

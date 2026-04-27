@@ -5,16 +5,15 @@ const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/ap
 
 export interface Product {
   id: string;
-  mainType: string;
-  subType: string;
+  category: string[];
   brand: string;
   title: string;
   description: string;
   longDescription: string;
+  status: 'pending' | 'approved' | 'rejected';
   price: number;
   stockQuantity: number;
   imgSrc: string[];
-  status: 'pending' | 'approved' | 'rejected' | 'deactivated';
   employeeId: string;
   employeeName: string;
   employeeEmail: string;

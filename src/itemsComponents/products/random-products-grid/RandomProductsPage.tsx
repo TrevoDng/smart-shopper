@@ -1,28 +1,21 @@
 // src/itemsComponents/products/random-products-grid/RandomProductsPage.tsx
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
-import { ProductCategory, ProductModel } from "../types/Product";
-//import ProductsCards from "../product-card/ProductsCads";
+import { Product } from "../types/Product";
 import "./RandomProductGrid.css";
 import { LoadingProduct } from "../LoadingProduct";
 import { useNavigate } from "react-router-dom";
 import { WishlistButton } from "../wish-list/components/WishlistButton";
 import { CartlistButton } from "../cart/components/CartlistButton";
-import TypeFilter from "../aside-filter-section/TypeFilter";
+import CategoryFilter from "../aside-filter-section/CategoryFilter";
 import { 
-   getAllProducts,
+  getAllProducts,
   applyMultipleFilters,
   cleanPrice,
-  //getProductsFromSearch
 } from "../utils/filterUtils";
-import { useAdaptedProducts } from "../../../hooks/useAdaptedProducts";
-import { productAdapter } from "../../../services/productAdapter";
-
-import './RandomProductsPage.css';
 import { useMediaQuery } from "../../../screen-size/useMediaQuery";
-//import ProductsPage from "../ProductsPage";
 
 interface PaginatedProducts {
-  products: ProductModel[];
+  products: Product[];
   currentPage: number;
   totalPages: number;
   hasNextPage: boolean;
@@ -30,20 +23,23 @@ interface PaginatedProducts {
 }
 
 interface RandomProductsPageProps {
-  categories: ProductCategory[];
-  searchedResults?: ProductCategory[]; // Optional search results
-  onSelectedType: (type: string | null) => void;
-  selectedType: string | null;
+  products: Product[];
+  searchedResults?: Product[];
+  selectedCategories: string[];
+  setSelectedCategories: (categories: string[]) => void;
+  selectedBrands: string[];
+  setSelectedBrands: (brands: string[]) => void;
+  priceRange: [number, number];
+  setPriceRange: (range: [number, number]) => void;
+  onDiscountedPrice: (productId: string, originalPrice: number) => { discountedPrice: number, discountAmount: number } | null;
   onItemId: (id: string) => void;
   onLoading: (id: string | null) => void;
-  loading?: string | null; 
+  loading?: string | null;
 }
 
-// FIXED shuffleArray function
+// shuffleArray function
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
-  //shuffled.length 
-  //is the number is going to run the shuffle
   for(let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -53,23 +49,18 @@ function shuffleArray<T>(array: T[]): T[] {
 
 // Function to get paginated products with all filters
 function getPaginatedProducts(
-  allProducts: ProductModel[],
+  allProducts: Product[],
   itemsPerPage: number,
   currentPage: number,
   shuffle: boolean = true
 ): PaginatedProducts {
-  // Shuffle products if needed
   const displayProducts = shuffle ? shuffleArray(allProducts) : allProducts;
   
-  // Calculate pagination
   const totalProducts = displayProducts.length;
   const totalPages = Math.ceil(totalProducts / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalProducts);
-
-  console.log("allProducts", allProducts.length);
   
-  // Get products for current page
   const paginatedProducts = displayProducts.slice(startIndex, endIndex);
   
   return {
@@ -82,41 +73,26 @@ function getPaginatedProducts(
 }
 
 const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
-  categories,
+  products,
   searchedResults = [],
-  onSelectedType, 
-  selectedType,
-  onItemId, 
-  onLoading, 
-  loading  
+  selectedCategories,
+  setSelectedCategories,
+  selectedBrands,
+  setSelectedBrands,
+  priceRange,
+  setPriceRange,
+  onDiscountedPrice,
+  onItemId,
+  onLoading,
+  loading,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
-  
-  // Filter states
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 20000]);
   const [showFilter, setShowFilter] = useState(false);
 
   const isMobile = useMediaQuery('(max-width: 768px)');
-
-    // Fetch real products from database
-  const { 
-    categories: adaptedCategories, 
-    loading: productsLoading, 
-    error: productsError,
-    refresh 
-  } = useAdaptedProducts();
-
-  // Use real data if available, otherwise fallback to demo data
-  //const allCategories = adaptedCategories.length > 0 ? adaptedCategories : categories;
-
-  const allCategories = adaptedCategories; // For now, we just use real data without fallback
-
-  function handleShowFilter() {
-    showFilter ? setShowFilter(false) : setShowFilter(true);
-  }
+  const navigate = useNavigate();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const [paginatedData, setPaginatedData] = useState<PaginatedProducts>({
     products: [],
@@ -126,60 +102,41 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
     hasPreviousPage: false
   });
   
-  const navigate = useNavigate();
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  
-  // Determine base data source: search results or categories
+  // Determine base data source: search results or products prop
   const baseDataSource = useMemo(() => {
-    return searchedResults.length > 0 ? searchedResults : allCategories;
-  }, [allCategories, searchedResults]);
-  
-  // const baseDataSource = useMemo(() => {
-  //   return searchedResults.length > 0 ? searchedResults : categories;
-  // }, [categories, searchedResults]);
+    return searchedResults.length > 0 ? searchedResults : products;
+  }, [products, searchedResults]);
   
   // Calculate price limits
   const priceLimits = useMemo(() => {
-    const allProducts = getAllProducts(baseDataSource);
-    const prices = allProducts.map(product => cleanPrice(product.price));
+    const allProductsList = getAllProducts(baseDataSource);
+    const prices = allProductsList.map(product => cleanPrice(product.price));
     return {
-      min: Math.min(...prices),
-      max: Math.max(...prices)
+      min: prices.length > 0 ? Math.min(...prices) : 0,
+      max: prices.length > 0 ? Math.max(...prices) : 10000
     };
   }, [baseDataSource]);
   
-  // Initialize price range with actual limits
+  // Initialize price range with actual limits (only once)
+  const priceInitializedRef = useRef(false);
   useEffect(() => {
-    if (priceLimits.min !== undefined && priceLimits.max !== undefined) {
+    if (!priceInitializedRef.current && priceLimits.min !== undefined && priceLimits.max !== undefined) {
+      priceInitializedRef.current = true;
       setPriceRange([priceLimits.min, priceLimits.max]);
     }
-  }, [priceLimits]);
+  }, [priceLimits, setPriceRange]);
   
   // Apply all filters
-  //the problem must be here
   const filteredProducts = useMemo(() => {
     if (baseDataSource.length === 0) return [];
     return applyMultipleFilters(baseDataSource, {
-      selectedTypes,
+      selectedCategories,
       selectedBrands,
       priceRange
     });
-  }, [baseDataSource, selectedTypes, selectedBrands, priceRange]);
-  /*
-  console.log("applyMultipleFilters", applyMultipleFilters(baseDataSource, {
-      selectedTypes,
-      selectedBrands,
-      priceRange
-    }).length);
-    */
+  }, [baseDataSource, selectedCategories, selectedBrands, priceRange]);
   
   // Get paginated data
-  //this controll products:
-  //1. page
-  //2. price
-  //3. type
-  //4. brand
-  //5. random
   const paginatedProducts = useMemo(() => {
     return getPaginatedProducts(filteredProducts, itemsPerPage, currentPage, true);
   }, [filteredProducts, itemsPerPage, currentPage]);
@@ -192,7 +149,7 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedTypes, selectedBrands, priceRange, baseDataSource]);
+  }, [selectedCategories, selectedBrands, priceRange]);
   
   // Clean up timeout on unmount
   useEffect(() => {
@@ -221,7 +178,7 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const getItemId = (type: string, id: string): void => {
+  const getItemId = (id: string): void => {
     if(timeoutRef.current) clearTimeout(timeoutRef.current);
     
     onLoading(id);
@@ -233,14 +190,8 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
     }, 1000);
   };
 
-  const handleTypeChange = (types: string[]) => {
-    setSelectedTypes(types);
-    // Keep backward compatibility with single type selection
-    if (types.length === 1) {
-      onSelectedType(types[0]);
-    } else if (types.length === 0) {
-      onSelectedType(null);
-    }
+  const handleCategoryChange = (categories: string[]) => {
+    setSelectedCategories(categories);
   };
 
   const handleBrandChange = (brands: string[]) => {
@@ -252,85 +203,73 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
   };
 
   const clearAllFilters = () => {
-    setSelectedTypes([]);
+    setSelectedCategories([]);
     setSelectedBrands([]);
     setPriceRange([priceLimits.min, priceLimits.max]);
-    onSelectedType(null);
   };
 
-  // Add this debug component right before the return statement
-const DebugPriceInfo = () => {
-  const allProducts = getAllProducts(baseDataSource);
-  const prices = allProducts.map(p => ({ title: p.title, raw: p.price, cleaned: cleanPrice(p.price) }));
-  
-  console.log('=== PRICE DEBUG ===');
-  console.log('Total products:', allProducts.length);
-  console.log('Prices:', prices);
-  console.log('Price limits:', priceLimits);
-  console.log('Current filter range:', priceRange);
-  console.log('Filtered products:', filteredProducts.length);
-  
-  return null;
-};
+  const handleShowFilter = () => {
+    setShowFilter(!showFilter);
+  };
 
-// Add this inside your component before the return
-<DebugPriceInfo />
-
-  console.log("baseDataSource: ", JSON.stringify(baseDataSource));
+  // Show loading state if no products
+  if (!products || products.length === 0) {
+    return (
+      <div className="product-page-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading products...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="random-products-page">
-      {/* Type Filter Component with all filters */}
+      {/* Category Filter Component */}
       <div className="type-filter-cover">
-        {isMobile &&
-        <div style={{textAlign:"center"}}>
-          <button style={{padding: "5px 20px", backgroundColor:"burlywood", border:"none", borderRadius:"5px"}}
-           onClick={handleShowFilter}>{showFilter ? "X" : "Filter/Sort"}</button>
-        </div>
-        }
+        {isMobile && (
+          <div style={{textAlign:"center"}}>
+            <button 
+              style={{padding: "5px 20px", backgroundColor:"burlywood", border:"none", borderRadius:"5px"}}
+              onClick={handleShowFilter}
+            >
+              {showFilter ? "X" : "Filter/Sort"}
+            </button>
+          </div>
+        )}
 
-        { (window.innerWidth  > 768 || showFilter) &&
-        <TypeFilter
-          categories={allCategories}
-          selectedTypes={selectedTypes}
-          selectedBrands={selectedBrands}
-          priceRange={priceRange}
-          onTypeChange={handleTypeChange}
-          onBrandChange={handleBrandChange}
-          onPriceRangeChange={handlePriceRangeChange}
-          loading={loading}
-        />
-        }
+        {(window.innerWidth > 768 || showFilter) && (
+          <CategoryFilter
+            products={baseDataSource}
+            selectedCategories={selectedCategories}
+            selectedBrands={selectedBrands}
+            priceRange={priceRange}
+            onCategoryChange={handleCategoryChange}
+            onBrandChange={handleBrandChange}
+            onPriceRangeChange={handlePriceRangeChange}
+            loading={loading}
+          />
+        )}
       </div>
 
       {/* Results Info and Products */}
       <div className="products-and-filter-info">
         <div className="results-header">
           <div className="results-info">
-            {productsLoading ? (
-              <h3>Loading products...</h3>
-            ) : allCategories.length === 0 ? (
-              <h3>No products available</h3>
-             ) : (
-              <h3>
+            <h3>
               {searchedResults.length > 0 
                 ? `Search Results (${filteredProducts.length} products)`
-                : selectedTypes.length === 0 && selectedBrands.length === 0
+                : selectedCategories.length === 0 && selectedBrands.length === 0
                 ? "All Products"
                 : `Filtered Products (${filteredProducts.length} found)`}
-              </h3>
-              )}
+            </h3>
             
-            {(selectedTypes.length > 0 || selectedBrands.length > 0) && (
+            {(selectedCategories.length > 0 || selectedBrands.length > 0) && (
               <div className="active-filters">
-                {selectedTypes.map(type => {
-                  const category = allCategories.find(c => c.type === type);
-                  return (
-                    <span key={`type-${type}`} className="filter-tag">
-                      Type: {category?.title || type}
-                    </span>
-                  );
-                })}
+                {selectedCategories.map(category => (
+                  <span key={`category-${category}`} className="filter-tag">
+                    Category: {category}
+                  </span>
+                ))}
                 {selectedBrands.map(brand => (
                   <span key={`brand-${brand}`} className="filter-tag">
                     Brand: {brand}
@@ -345,7 +284,7 @@ const DebugPriceInfo = () => {
             )}
           </div>
           
-          {(selectedTypes.length > 0 || selectedBrands.length > 0 || 
+          {(selectedCategories.length > 0 || selectedBrands.length > 0 || 
             priceRange[0] > priceLimits.min || priceRange[1] < priceLimits.max) && (
             <button 
               onClick={clearAllFilters}
@@ -361,48 +300,67 @@ const DebugPriceInfo = () => {
         {paginatedData.products.length > 0 ? (
           <>
             <div className="products-grid">
-              {paginatedData.products.map((product) => (
-                <div 
-                  key={`${product.id}-${currentPage}`} 
-                  className="product-card"
-                  onClick={() => getItemId(product.type, product.id)}
-                >
-                  {loading === product.id && (
-                    <LoadingProduct loadingClass={"loading-product"} />
-                  )}
-                  
-                  {/* Product Image */}
-                  {product.imgSrc && product.imgSrc.length > 0 && (
-                    <div className="product-image">
-                      <img 
-                        src={product.imgSrc[0]} 
-                        alt={product.title}
-                        className="product-img"
-                      />
-                    </div>
-                  )}
-                  
-                  {/* Product Info */}
-                  <div className="product-info">
-                    <h3 className="product-model">
-                      {product.title} 
-                      <span className="price" style={{marginLeft: "auto"}}>
-                        R{product.price}
-                      </span>
-                    </h3>
-                    <p className="product-description">{product.description}</p>
-                    <p className="product-type">Type: {product.type}</p>
-                    <p className="product-type">Type: {product.id}</p>
-                    <p className="product-brand">Brand: {product.brand}</p>
+              {paginatedData.products.map((product) => {
+                const originalPrice = parseFloat(product.price);
+                const discountInfo = onDiscountedPrice(product.id, originalPrice);
+                const displayCategory = product.category && product.category.length > 0 
+                  ? product.category[0] 
+                  : "Uncategorized";
+                
+                return (
+                  <div 
+                    key={`${product.id}-${currentPage}`} 
+                    className="product-card"
+                    onClick={() => getItemId(product.id)}
+                  >
+                    {loading === product.id && (
+                      <LoadingProduct loadingClass={"loading-product"} />
+                    )}
                     
-                    {/* Action Buttons */}
-                    <div className="product-actions">
-                      <CartlistButton product={product} />
-                      <WishlistButton product={product} />
+                    {/* Product Image */}
+                    {product.imgSrc && product.imgSrc.length > 0 && (
+                      <div className="product-image">
+                        <img 
+                          src={product.imgSrc[0]} 
+                          alt={product.title}
+                          className="product-img"
+                        />
+                        {discountInfo && (
+                          <span className="discount-badge">
+                            -{discountInfo.discountAmount}%
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Product Info */}
+                    <div className="product-info">
+                      <h3 className="product-model">
+                        {product.title} 
+                        <span className="price" style={{marginLeft: "auto"}}>
+                          {discountInfo ? (
+                            <>
+                              <span className="original-price-mini">R{originalPrice.toLocaleString()}</span>
+                              <span className="discounted-price-mini">R{discountInfo.discountedPrice.toLocaleString()}</span>
+                            </>
+                          ) : (
+                            `R${originalPrice.toLocaleString()}`
+                          )}
+                        </span>
+                      </h3>
+                      <p className="product-description">{product.description}</p>
+                      <p className="product-category">Category: {displayCategory}</p>
+                      <p className="product-brand">Brand: {product.brand}</p>
+                      
+                      {/* Action Buttons */}
+                      <div className="product-actions">
+                        <CartlistButton product={product} />
+                        <WishlistButton product={product} />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Pagination Controls */}
@@ -467,7 +425,7 @@ const DebugPriceInfo = () => {
                 {/* Page Info */}
                 <div className="page-info">
                   Page {paginatedData.currentPage} of {paginatedData.totalPages}
-                  {(selectedTypes.length > 0 || selectedBrands.length > 0) && (
+                  {(selectedCategories.length > 0 || selectedBrands.length > 0) && (
                     <span className="filter-info">
                       • {filteredProducts.length} products after filtering
                     </span>
@@ -490,6 +448,6 @@ const DebugPriceInfo = () => {
       </div>
     </div>
   );
-}
+};
 
 export default RandomProductsPage;

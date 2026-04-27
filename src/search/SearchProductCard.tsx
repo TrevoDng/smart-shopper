@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import './SearchProductCard.css';
-import { ProductModel } from "../itemsComponents/products/types/Product";
+import { Product } from "../itemsComponents/products/types/Product";
 import { LoadingProduct } from '../itemsComponents/products/LoadingProduct';
 import { useNavigate } from 'react-router-dom';
 
 interface SearchProductsCardsProps {
-    product: ProductModel;
+    product: Product;
     currency?: string;
     onItemId: (id: string) => void;
     //onSelectedType: (type: string) => void;
@@ -49,18 +49,18 @@ export const SearchProductCard: React.FC<SearchProductsCardsProps> =({
     
     return (
         <div className="search-popup-container" 
-        onClick={()=> getItemId(product.type, product.id)}>
+        onClick={()=> getItemId(product.category[0], product.id)}>
             {loading === product.id && (
                     <LoadingProduct loadingClass={"loading-product"}/> // Replace with your actual LoadingAnimation component
                   )}
             <div className='search-img-container'>
             <img className="search-popup-img" 
-            src={product.imgSrc[0]} alt={product.type}/>
+            src={product.imgSrc[0]} alt={product.category[0]}/>
             </div>
             <div className="search-popup-text-container">
                 <h3>{product.title} <span style={{float: "right", color:"tomato"}}>{currency}{product.price}</span></h3>
                 <p style={{color: "gray"}}>{product.description} Product description</p>
-                <p>type: {product.type}</p>
+                <p>type: {product.category[0]}</p>
                 <p>{currency}{product.price}</p>
             </div>
         </div>

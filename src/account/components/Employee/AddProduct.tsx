@@ -1,4 +1,4 @@
-// Updated AddProduct.tsx - Using the useImageUpload hook
+// Updated AddProduct.tsx - Using new category array structure
 
 import React, { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
@@ -9,8 +9,7 @@ import { useSlider } from '../../../slider/slidercontext/SliderContext';
 import EmployeeLayout from '../layout/EmployeeLayout';
 
 interface ProductFormData {
-  mainType: string;
-  subType: string;
+  category: string[];  // Changed from mainType/subType to array
   brand: string;
   title: string;
   description: string;
@@ -23,9 +22,14 @@ const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/ap
 
 const AddProduct: React.FC = () => {
   const { user, getToken } = useAuth();
+  
+  // Build category path from selected mainType and subType
+  const [selectedMainType, setSelectedMainType] = useState<ProductMainType>(productTypes[0]);
+  const [selectedSubType, setSelectedSubType] = useState<ProductSubType>(productTypes[0]?.subTypes[0]);
+  const [availableSubTypes, setAvailableSubTypes] = useState<ProductSubType[]>(productTypes[0]?.subTypes || []);
+  
   const [formData, setFormData] = useState<ProductFormData>({
-    mainType: productTypes[0]?.value || '',
-    subType: productTypes[0]?.subTypes[0]?.value || '',
+    category: [`${productTypes[0]?.value}/${productTypes[0]?.subTypes[0]?.value}`],
     brand: '',
     title: '',
     description: '',
@@ -48,23 +52,50 @@ const AddProduct: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [selectedMainType, setSelectedMainType] = useState<ProductMainType>(productTypes[0]);
-  const [availableSubTypes, setAvailableSubTypes] = useState<ProductSubType[]>(productTypes[0]?.subTypes || []);
 
   const { hideSlider } = useSlider();
   hideSlider();
 
   // Update subTypes when main type changes
   useEffect(() => {
-    const mainType = productTypes.find(t => t.value === formData.mainType);
+    const mainType = productTypes.find(t => t.value === selectedMainType?.value);
     if (mainType) {
       setSelectedMainType(mainType);
       setAvailableSubTypes(mainType.subTypes);
       if (mainType.subTypes.length > 0) {
-        setFormData(prev => ({ ...prev, subType: mainType.subTypes[0].value }));
+        const firstSubType = mainType.subTypes[0];
+        setSelectedSubType(firstSubType);
+        // Update category array with new path
+        setFormData(prev => ({
+          ...prev,
+          category: [`${mainType.value}/${firstSubType.value}`]
+        }));
       }
     }
-  }, [formData.mainType]);
+  }, [selectedMainType?.value]);
+
+  // Handle main type change
+  const handleMainTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const mainTypeValue = e.target.value;
+    const mainType = productTypes.find(t => t.value === mainTypeValue);
+    if (mainType) {
+      setSelectedMainType(mainType);
+    }
+  };
+
+  // Handle sub type change
+  const handleSubTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const subTypeValue = e.target.value;
+    const subType = availableSubTypes.find(st => st.value === subTypeValue);
+    if (subType) {
+      setSelectedSubType(subType);
+      // Update category array with new path
+      setFormData(prev => ({
+        ...prev,
+        category: [`${selectedMainType.value}/${subType.value}`]
+      }));
+    }
+  };
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -121,8 +152,8 @@ const AddProduct: React.FC = () => {
       // Upload images first
       const imageUrls = await uploadImages({
         userId: user.id,
-        productType: formData.mainType,
-        productSubType: formData.subType,
+        productType: selectedMainType.value,
+        productSubType: selectedSubType.value,
         token: token
       });
       
@@ -130,7 +161,7 @@ const AddProduct: React.FC = () => {
         throw new Error('Failed to upload images');
       }
       
-      // Submit product to backend
+      // Submit product to backend with new category array structure
       const response = await fetch(`${API_BASE}/products`, {
         method: 'POST',
         headers: {
@@ -138,14 +169,14 @@ const AddProduct: React.FC = () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          ...formData,
+          category: formData.category,  // Array like ["electronics/computers"]
+          brand: formData.brand,
+          title: formData.title,
+          description: formData.description,
+          longDescription: formData.longDescription,
           price: parseFloat(formData.price),
           stockQuantity: parseInt(formData.stockQuantity),
-          imgSrc: imageUrls,
-          status: 'pending',
-          employeeId: user?.id,
-          employeeName: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
-          employeeEmail: user?.email,
+          imgSrc: imageUrls
         })
       });
       
@@ -158,9 +189,12 @@ const AddProduct: React.FC = () => {
       setSuccessMessage('Product submitted successfully! It will be reviewed by an administrator.');
       
       // Reset form
+      const defaultMainType = productTypes[0];
+      const defaultSubType = productTypes[0]?.subTypes[0];
+      setSelectedMainType(defaultMainType);
+      setSelectedSubType(defaultSubType);
       setFormData({
-        mainType: productTypes[0]?.value || '',
-        subType: productTypes[0]?.subTypes[0]?.value || '',
+        category: [`${defaultMainType?.value}/${defaultSubType?.value}`],
         brand: '',
         title: '',
         description: '',
@@ -208,15 +242,15 @@ const AddProduct: React.FC = () => {
       )}
 
       <form onSubmit={handleSubmit} className="product-form">
-        {/* Product Type Selection */}
+        {/* Product Category Selection - Creates path like "electronics/computers" */}
         <div className="form-row">
           <div className="form-group">
             <label htmlFor="mainType">Product Category *</label>
             <select
               id="mainType"
               name="mainType"
-              value={formData.mainType}
-              onChange={handleInputChange}
+              value={selectedMainType?.value || ''}
+              onChange={handleMainTypeChange}
               required
               disabled={isSubmitting || isUploading}
             >
@@ -233,8 +267,8 @@ const AddProduct: React.FC = () => {
             <select
               id="subType"
               name="subType"
-              value={formData.subType}
-              onChange={handleInputChange}
+              value={selectedSubType?.value || ''}
+              onChange={handleSubTypeChange}
               required
               disabled={isSubmitting || isUploading}
             >
@@ -244,6 +278,15 @@ const AddProduct: React.FC = () => {
                 </option>
               ))}
             </select>
+          </div>
+        </div>
+
+        {/* Display the category path that will be saved */}
+        <div className="form-row">
+          <div className="form-group full-width">
+            <small className="category-path-hint">
+              Category Path: <strong>{formData.category[0] || 'Not selected'}</strong>
+            </small>
           </div>
         </div>
 

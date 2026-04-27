@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { CartlistContextType, CartlistItem, CartlistState } from "../type/CartlistItem"
 
-import { ProductModel } from "../../types/Product";
+import { Product } from "../../types/Product";
 
 const CartlistContext = createContext<CartlistContextType | undefined>(undefined);
 
@@ -71,7 +71,7 @@ export const CartlistProvider: React.FC<{ children:
 
         }, [cartlist]);
 
-        const addToCartlist = (product: ProductModel) => {
+        const addToCartlist = (product: Product) => {
             setCartlist(prev => {
                 if (!prev) return {items: []};
 

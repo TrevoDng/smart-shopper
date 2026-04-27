@@ -1,12 +1,12 @@
 import { useSlider } from "../../../../slider/slidercontext/SliderContext";
-import { ProductModel } from "../../types/Product";
+import { Product } from "../../types/Product";
 import { useWishlist } from "../context/WishlistContext";
 //import { Heart } from 'lucide-react';
 
 import './WishlistButton.css';
 
 interface WishlistButtonProps {
-    product: ProductModel;
+    product: Product;
     size?: 'sm' | 'md' | 'lg';
     className?: string;
 }
@@ -54,8 +54,7 @@ export const WishlistButton: React.FC<WishlistButtonProps> =({
         add-to-wishlist-btn ${isWishlisted ? 'wishlist-active' : 'add-to-wishlist-btn'}
       `}
       aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-    >+ Wishlist 
-        <i className='fa-regular fa-heart item-heart-icon' />
+    ><i className='fa-regular fa-heart item-heart-icon' />
         {/*
       <Heart 
         className={isWishlisted ? 'fill-current' : ''} 

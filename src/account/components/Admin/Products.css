@@ -313,6 +313,25 @@
   color: #f44336;
 }
 
+.add-sale-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.add-sale-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
 @media (max-width: 768px) {
   .admin-products-container {
     padding: 16px;

@@ -1,22 +1,13 @@
 // src/itemsComponents/products/types/Product.ts
-export interface ProductModel {
+export interface Product {
   id: string;
-  type: string;
+  category: string[];
   brand: string;
-  title: string; //model must be chnaged to title
+  title: string;
   description: string;
   price: string;
   currency?: string;
   size?: string;
   imgSrc: string[];
   longDescription: string;
-}
-
-
- export interface ProductCategory {
-  type: string;
-  icon: string;
-  title: string;
-  typeId: number;
-  models: ProductModel[];
 }

@@ -9,12 +9,14 @@
     margin: 20px 0 20px 0;
     padding: 20px;
     overflow-x: auto;
+    text-decoration: none;
     height: fit-content;
 }
 
 .item-services ul li {
   padding: 0px;
   text-align: center;
+  text-decoration: none;
 }
 
 .item-services ul li p {

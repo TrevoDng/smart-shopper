@@ -1,8 +1,8 @@
-import { ProductModel } from "../../types/Product";
+import { Product } from "../../types/Product";
 
 export interface WishlistItem {
     id: string;
-    product: ProductModel;
+    product: Product;
     
     addedAt: Date;
 }
@@ -13,7 +13,7 @@ export interface WishlistState {
 
 export type WishlistContextType = {
     wishlist: WishlistState;
-    addToWishlist: (product: ProductModel)=> void;
+    addToWishlist: (product: Product)=> void;
     removeFromWishlist: (productId: string)=> void;
     isInWishlist: (productId: string)=> boolean;
     clearWishlist: ()=> void;
