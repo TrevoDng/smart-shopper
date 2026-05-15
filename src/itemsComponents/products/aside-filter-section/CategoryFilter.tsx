@@ -1,13 +1,14 @@
 // src/itemsComponents/products/aside-filter-section/CategoryFilter.tsx
 import React, { useEffect, useState, useMemo } from 'react';
 import { Product } from '../types/Product';
-import './CategoryFilter.css'; // Reuse same CSS
-import { cleanPrice, getAllProducts, getUniqueBrands, getUniqueCategories } from '../utils/filterUtils';
+import './CategoryFilter.css';
+import { cleanPrice } from '../utils/filterUtils';
 
 interface CategoryFilterProps {
   products: Product[];
   selectedCategories: string[];
   onCategoryChange: (categories: string[]) => void;
+  selectedMaincategory?: string | null;
   selectedBrands: string[];
   priceRange: [number, number];
   onBrandChange: (brands: string[]) => void;
@@ -27,11 +28,31 @@ const getIconForCategory = (category: string): string => {
     'furniture': 'fa-couch',
     'other': 'fa-box',
     'laptops': 'fa-laptop',
-    'desktop': 'fa-computer',
-    'screens': 'fa-display',
+    'computers': 'fa-computer',
+    'computer-components': 'fa-microchip',
+    'monitors': 'fa-display',
     'smartphones': 'fa-mobile-alt',
+    'tablets': 'fa-tablet-alt',
     'audio': 'fa-headphones',
-    'cameras': 'fa-camera'
+    'cameras': 'fa-camera',
+    'refrigerators': 'fa-thermometer-half',
+    'washing-machines': 'fa-jug-detergent',
+    'air-fryers': 'fa-fire',
+    'microwaves': 'fa-temperature-high',
+    'coffee-makers': 'fa-mug-hot',
+    'vacuums': 'fa-broom',
+    'jeans': 'fa-shopping-cart',
+    'shirts': 'fa-shirt',
+    't-shirts': 'fa-tshirt',
+    'dresses': 'fa-female',
+    'jackets': 'fa-vest',
+    'shoes': 'fa-shoe-prints',
+    'chairs': 'fa-chair',
+    'tables': 'fa-table',
+    'sofas': 'fa-couch',
+    'beds': 'fa-bed',
+    'desks': 'fa-desk',
+    'miscellaneous': 'fa-box'
   };
   return iconMap[category] || 'fa-folder';
 };
@@ -39,49 +60,134 @@ const getIconForCategory = (category: string): string => {
 const CategoryFilter: React.FC<CategoryFilterProps> = ({
   products,
   selectedCategories,
+  selectedMaincategory,
   selectedBrands,
   priceRange,
   onCategoryChange,
   onBrandChange,
   onPriceRangeChange,
-  loading
+  loading,
 }) => {
   const [localPriceRange, setLocalPriceRange] = useState<[number, number]>(priceRange);
-  
-  // Extract unique categories
-  const allCategories = useMemo(() => getUniqueCategories(products), [products]);
-  
-  // Extract unique brands
-  const allBrands = useMemo(() => getUniqueBrands(products), [products]);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
-  // Calculate price limits
+  // Build complete category hierarchy from all products
+  const categoryHierarchy = useMemo(() => {
+
+    let filteredProducts = products;
+    if (selectedMaincategory) {
+      filteredProducts = products.filter(product => 
+        Array.isArray(product.category) && product.category.length > 0 && 
+        product.category[0].startsWith(selectedMaincategory + '/')
+      );
+    }
+
+    if (filteredProducts.length === 0) return [];
+
+    const hierarchy = new Map<string, Map<string, { fullPath: string; count: number }>>();
+    
+    console.log("Filtered Products:", filteredProducts);
+
+    filteredProducts.forEach(product => {
+      if (Array.isArray(product.category) && product.category.length > 0) {
+        const fullPath = product.category[0];
+        const [mainCat, subCat] = fullPath.split('/');
+        
+        if (mainCat && subCat) {
+          if (!hierarchy.has(mainCat)) {
+            hierarchy.set(mainCat, new Map());
+          }
+          
+          const subMap = hierarchy.get(mainCat)!;
+          const existing = subMap.get(subCat);
+          if (existing) {
+            existing.count++;
+          } else {
+            subMap.set(subCat, { fullPath, count: 1 });
+          }
+        }
+      }
+    });
+    
+    // Convert to array and sort
+    const result = Array.from(hierarchy.entries())
+      .map(([mainCat, subMap]) => ({
+        mainCategory: mainCat,
+        subCategories: Array.from(subMap.entries())
+          .map(([subCat, { fullPath, count }]) => ({
+            name: subCat,
+            fullPath,
+            count
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name))
+      }))
+      .sort((a, b) => a.mainCategory.localeCompare(b.mainCategory));
+    
+    return result;
+  }, [products, selectedMaincategory]);
+
+  console.log("Filtered Products:", selectedMaincategory);
+
+  // Auto-expand categories that have selected subcategories
+  useEffect(() => {
+    const categoriesToExpand = new Set<string>();
+    selectedCategories.forEach(selectedPath => {
+      const mainCat = selectedPath.split('/')[0];
+      if (mainCat) {
+        categoriesToExpand.add(mainCat);
+      }
+    });
+    
+    if (categoriesToExpand.size > 0) {
+      setExpandedCategories(prev => new Set([...prev, ...categoriesToExpand]));
+    }
+  }, [selectedCategories]);
+
+  // Calculate price limits based on filtered products (consider selected categories)
   const priceLimits = useMemo(() => {
-    if (!products || products.length === 0) {
+    let filteredProducts = products;
+    
+    // Apply category filter if any categories are selected
+    if (selectedCategories.length > 0) {
+      filteredProducts = products.filter(product => 
+        Array.isArray(product.category) && 
+        product.category.some(cat => selectedCategories.includes(cat))
+      );
+    }
+    
+    if (filteredProducts.length === 0) {
       return { min: 0, max: 10000 };
     }
-    const allProductsList = getAllProducts(products);
-    if (allProductsList.length === 0) {
-      return { min: 0, max: 10000 };
-    }
-    const prices = allProductsList.map(product => cleanPrice(product.price));
+    
+    const prices = filteredProducts.map(product => cleanPrice(product.price));
     return {
       min: Math.min(...prices),
       max: Math.max(...prices)
     };
-  }, [products]);
+  }, [products, selectedCategories]);
 
   // Sync local price range with prop
   useEffect(() => {
     setLocalPriceRange(priceRange);
   }, [priceRange]);
 
-  const handleCategoryToggle = (category: string) => {
+  const toggleCategoryExpand = (categoryName: string) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryName)) {
+      newExpanded.delete(categoryName);
+    } else {
+      newExpanded.add(categoryName);
+    }
+    setExpandedCategories(newExpanded);
+  };
+
+  const handleSubCategoryToggle = (fullPath: string) => {
     const newSelectedCategories = [...selectedCategories];
-    if (newSelectedCategories.includes(category)) {
-      const index = newSelectedCategories.indexOf(category);
+    if (newSelectedCategories.includes(fullPath)) {
+      const index = newSelectedCategories.indexOf(fullPath);
       newSelectedCategories.splice(index, 1);
     } else {
-      newSelectedCategories.push(category);
+      newSelectedCategories.push(fullPath);
     }
     onCategoryChange(newSelectedCategories);
   };
@@ -109,29 +215,39 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
     onPriceRangeChange(newRange);
   };
 
-  const handleSelectAllCategories = () => {
-    const allSelected = selectedCategories.length === allCategories.length && allCategories.length > 0;
-    onCategoryChange(allSelected ? [] : [...allCategories]);
-  };
-
   const handleClearAllCategories = () => {
     onCategoryChange([]);
   };
 
-  const handleSelectAllBrands = () => {
-    const allSelected = selectedBrands.length === allBrands.length && allBrands.length > 0;
-    onBrandChange(allSelected ? [] : [...allBrands]);
-  };
-
-  const handleClearAllBrands = () => {
-    onBrandChange([]);
-  };
-
   const handleResetPrice = () => {
+    setLocalPriceRange([priceLimits.min, priceLimits.max]);
     onPriceRangeChange([priceLimits.min, priceLimits.max]);
   };
 
-  if (!products || products.length === 0) {
+  // Get unique brands from products (consider selected categories)
+  const allBrands = useMemo(() => {
+    let filteredProducts = products;
+    
+    // Apply category filter if any categories are selected
+    if (selectedCategories.length > 0) {
+      filteredProducts = products.filter(product => 
+        Array.isArray(product.category) && 
+        product.category.some(cat => selectedCategories.includes(cat))
+      );
+    }
+    
+    const brands = filteredProducts
+      .map(product => product.brand)
+      .filter((brand, index, self) => brand && self.indexOf(brand) === index)
+      .sort();
+    
+    return brands;
+  }, [products, selectedCategories]);
+
+  // Count how many subcategories are selected
+  const selectedCount = selectedCategories.length;
+
+  if (categoryHierarchy.length === 0) {
     return (
       <div className="type-filter">
         <div className="filter-section">
@@ -139,12 +255,15 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
             <h3>Filter by Category</h3>
           </div>
           <div className="no-data-message">
-            <p>No product categories available</p>
+            <p>No categories available</p>
           </div>
         </div>
       </div>
     );
   }
+
+
+        //console.log("Selected Categories:", selectedCategories);
 
   return (
     <div className="type-filter">
@@ -152,132 +271,141 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
       <div className="filter-section">
         <div className="filter-header">
           <h3>Filter by Category</h3>
-          <div className="filter-actions">
-            {allCategories.length > 0 && (
-              <>
-                <button 
-                  onClick={handleSelectAllCategories}
-                  className={`select-all-btn ${selectedCategories.length === allCategories.length ? 'active' : ''}`}
-                  disabled={loading !== null}
-                >
-                  {selectedCategories.length === allCategories.length ? 'Deselect All' : 'Select All'}
-                </button>
-                <button 
-                  onClick={handleClearAllCategories}
-                  className="clear-btn"
-                  disabled={selectedCategories.length === 0 || loading !== null}
-                >
-                  Clear All
-                </button>
-              </>
-            )}
-          </div>
+          {selectedCount > 0 && (
+            <button 
+              onClick={handleClearAllCategories}
+              className="clear-all-btn"
+              disabled={loading !== null}
+            >
+              Clear All ({selectedCount})
+            </button>
+          )}
         </div>
 
-        <div className="type-list">
-          {allCategories.map((category) => {
-            const isSelected = selectedCategories.includes(category);
-            const productCount = products.filter(p => p.category.includes(category)).length;
-            const iconClass = getIconForCategory(category);
-            
-            return (
-              <div key={category} className="type-item">
-                <label className={`type-label ${isSelected ? 'selected' : ''}`}>
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => handleCategoryToggle(category)}
-                    className="type-checkbox"
-                    disabled={loading !== null}
-                  />
-                  <span className="type-info">
-                    <span className="type-name">{textCase(category)}</span>
-                    <span className="type-count">({productCount})</span>
-                  </span>
-                  <span className="type-icon">
-                    <i className={`fas ${iconClass}`}></i>
-                  </span>
-                </label>
+        {/* All Main Categories with their Subcategories */}
+        {categoryHierarchy.map(({ mainCategory, subCategories }) => {
+          const isExpanded = expandedCategories.has(mainCategory);
+          const hasSelectedSubcategories = selectedCategories.some(cat => cat.startsWith(mainCategory + '/'));
+          const mainCategoryCount = subCategories.reduce((sum, sub) => sum + sub.count, 0);
+          
+          return (
+            <div key={mainCategory} className="category-group">
+              {/* Main Category Button */}
+              <div 
+                className={`main-category-button ${hasSelectedSubcategories ? 'has-selected' : ''}`}
+                onClick={() => toggleCategoryExpand(mainCategory)}
+              >
+                <div className="main-category-info">
+                  <i className={`fas ${getIconForCategory(mainCategory)}`}></i>
+                  <span className="main-category-name">{textCase(mainCategory)}</span>
+                  <span className="main-category-count">({mainCategoryCount})</span>
+                </div>
+                <i className={`fas fa-chevron-${isExpanded ? 'up' : 'down'} arrow-icon`}></i>
               </div>
-            );
-          })}
-        </div>
 
+              {/* Subcategories - shown when expanded */}
+              {isExpanded && (
+                <div className="subcategories-container">
+                  {subCategories.map(({ name, fullPath, count }) => {
+                    const isSelected = selectedCategories.includes(fullPath);
+                    
+                    return (
+                      <div key={fullPath} className="subcategory-item">
+                        <label className={`subcategory-label ${isSelected ? 'selected' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => handleSubCategoryToggle(fullPath)}
+                            className="subcategory-checkbox"
+                            disabled={loading !== null}
+                          />
+                          <span className="subcategory-info">
+                            <span className="subcategory-name">{textCase(name)}</span>
+                            <span className="subcategory-count">({count})</span>
+                          </span>
+                          <span className="subcategory-icon">
+                            <i className={`fas ${getIconForCategory(name)}`}></i>
+                          </span>
+                        </label>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Selected categories summary */}
         {selectedCategories.length > 0 && (
           <div className="selected-summary">
             <div className="selected-tags">
-              {selectedCategories.map(category => (
-                <span key={category} className="selected-tag">
-                  {textCase(category)}
-                  <button 
-                    onClick={() => handleCategoryToggle(category)}
-                    className="remove-tag"
-                    disabled={loading !== null}
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
+              {selectedCategories.map(fullPath => {
+                const parts = fullPath.split('/');
+                const subCatName = parts[1] || parts[0];
+                return (
+                  <span key={fullPath} className="selected-tag">
+                    {textCase(subCatName)}
+                    <button 
+                      onClick={() => handleSubCategoryToggle(fullPath)}
+                      className="remove-tag"
+                      disabled={loading !== null}
+                    >
+                      ×
+                    </button>
+                  </span>
+                );
+              })}
             </div>
           </div>
         )}
       </div>
 
-      {/* Brand Filter Section */}
+      {/* Brand Filter Section - Always shows brands from currently visible products */}
       {allBrands.length > 0 && (
         <div className="filter-section">
           <div className="filter-header">
             <h3>Filter by Brand</h3>
-            <div className="filter-actions">
-              <button 
-                onClick={handleSelectAllBrands}
-                className={`select-all-btn ${selectedBrands.length === allBrands.length ? 'active' : ''}`}
-                disabled={loading !== null}
-              >
-                {selectedBrands.length === allBrands.length ? 'Deselect All' : 'Select All'}
-              </button>
-              <button 
-                onClick={handleClearAllBrands}
-                className="clear-btn"
-                disabled={selectedBrands.length === 0 || loading !== null}
-              >
-                Clear All
-              </button>
-            </div>
           </div>
 
-          <div className="type-list">
-  {allBrands.map(brand => {
-    const isSelected = selectedBrands.includes(brand);
-    // FIXED: Safe check for brand existence
-    const brandProductCount = products.filter(product => 
-      product.brand && product.brand.toLowerCase() === brand
-    ).length;
-    
-    const displayBrandName = brand.length < 3 ? brand.toUpperCase() : textCase(brand);
-    
-    return (
-      <div key={brand} className="type-item">
-        <label className={`type-label ${isSelected ? 'selected' : ''}`}>
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={() => handleBrandToggle(brand)}
-            className="type-checkbox"
-            disabled={loading !== null}
-          />
-          <span className="type-info">
-            <span className="type-name">{displayBrandName}</span>
-            <span className="type-count">({brandProductCount})</span>
-          </span>
-          <span className="type-icon">
-            <i className="fas fa-tag"></i>
-          </span>
-        </label>
-      </div>
-    );
-  })}
-</div>
+          <div className="brands-list">
+            {allBrands.map(brand => {
+              const isSelected = selectedBrands.includes(brand);
+              // Count products for this brand based on current category selection
+              let brandProductCount = products.filter(product => {
+                if (selectedCategories.length > 0) {
+                  // If categories are selected, only count brands from those categories
+                  return product.brand === brand && 
+                         Array.isArray(product.category) && 
+                         product.category.some(cat => selectedCategories.includes(cat));
+                }
+                return product.brand === brand;
+              }).length;
+              
+              const displayBrandName = brand.length < 3 ? brand.toUpperCase() : textCase(brand);
+              
+              return (
+                <div key={brand} className="brand-item">
+                  <label className={`brand-label ${isSelected ? 'selected' : ''}`}>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleBrandToggle(brand)}
+                      className="brand-checkbox"
+                      disabled={loading !== null}
+                    />
+                    <span className="brand-info">
+                      <span className="brand-name">{displayBrandName}</span>
+                      <span className="brand-count">({brandProductCount})</span>
+                    </span>
+                    <span className="brand-icon">
+                      <i className="fas fa-tag"></i>
+                    </span>
+                  </label>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 

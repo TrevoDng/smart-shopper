@@ -98,6 +98,7 @@ interface ProductMainPageProps {
   searchedQuery: string;
   selectedCategories: string[];
   setSelectedCategories: (categories: string[]) => void;
+  selectedMainCategory: string | null;
   selectedBrands: string[];
   setSelectedBrands: (brands: string[]) => void;
   priceRange: [number, number];
@@ -118,6 +119,7 @@ const ProductMainPage: React.FC<ProductMainPageProps> = ({
   searchedQuery,
   selectedCategories,
   setSelectedCategories,
+  selectedMainCategory,
   selectedBrands,
   setSelectedBrands,
   priceRange,
@@ -139,10 +141,12 @@ const ProductMainPage: React.FC<ProductMainPageProps> = ({
               resultsMatch={resultsMatch}
               selectedCategories={selectedCategories}
               setSelectedCategories={setSelectedCategories}
+              selectedMainCategory={selectedMainCategory}
               selectedBrands={selectedBrands}
               setSelectedBrands={setSelectedBrands}
               priceRange={priceRange}
               setPriceRange={setPriceRange}
+              
               onDiscountedPrice={onDiscountedPrice}
               fetchDiscounts={fetchDiscounts}
               onItemId={onItemId}
@@ -223,6 +227,7 @@ interface MainPageControllerProps {
   searchedQuery: string;
   selectedCategories: string[];
   setSelectedCategories: (categories: string[]) => void;
+  selectedMainCategory: string | null;
   selectedBrands: string[];
   setSelectedBrands: (brands: string[]) => void;
   priceRange: [number, number];
@@ -244,6 +249,7 @@ const MainPageController: React.FC<MainPageControllerProps> = ({
   searchedQuery,
   selectedCategories,
   setSelectedCategories,
+  selectedMainCategory,
   selectedBrands,
   setSelectedBrands,
   priceRange,
@@ -299,6 +305,7 @@ const MainPageController: React.FC<MainPageControllerProps> = ({
             searchedQuery={searchedQuery}
             selectedCategories={selectedCategories}
             setSelectedCategories={setSelectedCategories}
+            selectedMainCategory={selectedMainCategory}
             selectedBrands={selectedBrands}
             setSelectedBrands={setSelectedBrands}
             priceRange={priceRange}
@@ -401,6 +408,7 @@ const AppContent: React.FC = () => {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [typeById, setTypeById] = useState<number | null>(null);
   const [loadingDelay, setLoadingDelay] = useState<string | null>(null);
+  const [selectedMainCategory, setSelectedMainCategory] = useState<string | null>(null);
   
   const { getDiscountedPrice, fetchDiscounts } = useDiscounts();
   const { id } = useParams();
@@ -492,6 +500,8 @@ const AppContent: React.FC = () => {
       </div>
     );
   }
+
+  console.log("Selected Categories:", selectedCategories);
   
   return (
     <ThemeProvider>
@@ -509,7 +519,12 @@ const AppContent: React.FC = () => {
                 />
                 
                 <SliderConditionalRenderer />
-                <CategoryMainFilter datas={products} selectedCategory={selectedCategories} onSelectedCategory={setSelectedCategories}/>
+                <CategoryMainFilter 
+  datas={products} 
+  selectedMainCategory={selectedMainCategory}  // Pass selectedCategories instead
+  onSelectedMainCategory={setSelectedMainCategory}
+/>
+                
                 <main className='main-content-container'>
                   <AuthProvider>
                     <MainPageController 
@@ -523,6 +538,7 @@ const AppContent: React.FC = () => {
                       searchedQuery={searchQuery}
                       selectedCategories={selectedCategories}
                       setSelectedCategories={setSelectedCategories}
+                      selectedMainCategory={selectedMainCategory}
                       selectedBrands={selectedBrands}
                       setSelectedBrands={setSelectedBrands}
                       priceRange={priceRange}

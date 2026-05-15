@@ -11,6 +11,7 @@ import {
   getAllProducts,
   applyMultipleFilters,
   cleanPrice,
+  filterProductsByMainCategory,
 } from "../utils/filterUtils";
 import { useMediaQuery } from "../../../screen-size/useMediaQuery";
 import { getFullImageUrl } from "../utils/getFullImageUrl";
@@ -27,6 +28,7 @@ interface ProductPageProps {
   resultsMatch?: boolean;
   selectedCategories: string[];
   setSelectedCategories: (categories: string[]) => void;
+  selectedMainCategory?: string | null;
   selectedBrands: string[];
   setSelectedBrands: (brands: string[]) => void;
   priceRange: [number, number];
@@ -46,6 +48,7 @@ const ProductPage: React.FC<ProductPageProps> = ({
   resultsMatch,
   selectedCategories,
   setSelectedCategories,
+  selectedMainCategory,
   selectedBrands,
   setSelectedBrands,
   priceRange,
@@ -104,12 +107,19 @@ const ProductPage: React.FC<ProductPageProps> = ({
   // Apply all filters
   const filteredProducts = useMemo(() => {
     if (baseDataSource.length === 0) return [];
+
+    let filtered = baseDataSource;
+
+    if (selectedMainCategory) {
+      filtered = filterProductsByMainCategory(filtered, selectedMainCategory);
+    }
+
     return applyMultipleFilters(baseDataSource, {
       selectedCategories,
       selectedBrands,
       priceRange
     });
-  }, [baseDataSource, selectedCategories, selectedBrands, priceRange]);
+  }, [baseDataSource, selectedMainCategory, selectedCategories, selectedBrands, priceRange]);
 
   // Reset brands when base data source changes
   useEffect(() => {
@@ -194,15 +204,15 @@ const ProductPage: React.FC<ProductPageProps> = ({
   const totalHeight = totalItems * itemHeight;
 
   useEffect(() => {
-  if (baseDataSource.length > 0) {
-    const productIdsKey = baseDataSource.map(p => p.id).sort().join(',');
-    if (productIdsKey !== previousProductIdsRef.current) {
-      previousProductIdsRef.current = productIdsKey;
-      const productIds = baseDataSource.map(p => p.id);
-      fetchDiscounts(productIds);
+    if (baseDataSource.length > 0) {
+      const productIdsKey = baseDataSource.map(p => p.id).sort().join(',');
+      if (productIdsKey !== previousProductIdsRef.current) {
+        previousProductIdsRef.current = productIdsKey;
+        const productIds = baseDataSource.map(p => p.id);
+        fetchDiscounts(productIds);
+      }
     }
-  }
-}, [baseDataSource]);
+  }, [baseDataSource, fetchDiscounts]);
 
   const visibleRange = useMemo(() => {
     if (!containerHeight) {
@@ -230,19 +240,17 @@ const ProductPage: React.FC<ProductPageProps> = ({
     return (visibleRange.start + index) * itemHeight;
   };
 
-
-
-    if (searchedQuery.length > 2 && searchedResults.length === 0 && resultsMatch === false) {
-        return (
-          <div className="loading-container" style={{ textAlign: 'center', padding: '50px' }}>
-            <h3>No results found for "{searchedQuery}"</h3>
-            <p>Try checking your spelling or using different keywords.</p>
-            <button onClick={() => setSearchQuery('')}>Clear Search</button>
-          </div>
+  if (searchedQuery.length > 2 && searchedResults.length === 0 && resultsMatch === false) {
+    return (
+      <div className="loading-container" style={{ textAlign: 'center', padding: '50px' }}>
+        <h3>No results found for "{searchedQuery}"</h3>
+        <p>Try checking your spelling or using different keywords.</p>
+        <button onClick={() => setSearchQuery('')}>Clear Search</button>
+      </div>
     ); 
-    }
+  }
 
-      // Show loading state if no products
+  // Show loading state if no products
   if (!products || products.length === 0) {
     return (
       <div className="product-page-loading">
@@ -308,17 +316,21 @@ const ProductPage: React.FC<ProductPageProps> = ({
             {(selectedCategories.length > 0 || selectedBrands.length > 0 || 
               priceRange[0] > priceLimits.min || priceRange[1] < priceLimits.max) && (
               <div className="active-filters">
-                {selectedCategories.map(category => (
-                  <span key={`category-${category}`} className="filter-tag">
-                    Category: {category}
-                    <button
-                      onClick={() => handleCategoryChange(selectedCategories.filter(c => c !== category))}
-                      className="remove-filter"
-                    >
-                      ✕
-                    </button>
-                  </span>
-                ))}
+                {selectedCategories.map(category => {
+                  // Display just the subcategory name for better readability
+                  const displayName = category.split('/')[1] || category;
+                  return (
+                    <span key={`category-${category}`} className="filter-tag">
+                      Category: {displayName}
+                      <button
+                        onClick={() => handleCategoryChange(selectedCategories.filter(c => c !== category))}
+                        className="remove-filter"
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  );
+                })}
                 {selectedBrands.map(brand => (
                   <span key={`brand-${brand}`} className="filter-tag">
                     Brand: {brand}
@@ -384,7 +396,7 @@ const ProductPage: React.FC<ProductPageProps> = ({
                   const discountInfo = onDiscountedPrice(product.id, originalPrice);
                   
                   const displayCategory = product.category && product.category.length > 0 
-                    ? product.category[0] 
+                    ? (product.category[0].split('/')[1] || product.category[0])
                     : "Uncategorized";
                   
                   return (
@@ -399,24 +411,19 @@ const ProductPage: React.FC<ProductPageProps> = ({
 
                       {/* Product Image */}
                       {product.imgSrc && product.imgSrc.length > 0 && (
-                        console.log("Rendering image for product:", product.imgSrc[0]),
                         <div className="product-image">
                           <img
-                          className="product-img"
+                            className="product-img"
                             src={getFullImageUrl(product.imgSrc[0])}
                             alt={product.title}
                             loading="lazy"
                             onError={(e) => {
-                            // Fallback if image fails to load
-                            const target = e.target as HTMLImageElement;
-                            target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                              const target = e.target as HTMLImageElement;
+                              target.src = 'https://via.placeholder.com/300x200?text=No+Image';
                             }}
                           />
                           {discountInfo && (
-                            <span className="discount-badge">SALE
-                              {/*<i className="fas fa-tag">Sale</i>*/}
-                              
-                            </span>
+                            <span className="discount-badge">SALE</span>
                           )}
                         </div>
                       )}
@@ -425,26 +432,23 @@ const ProductPage: React.FC<ProductPageProps> = ({
                       <div className="product-info">
                         <div className="product-header">
                           <h3 className="product-title">{product.title}</h3>
-
                         </div>
                         <p className="product-description">{product.description}</p>
                         <div className="product-meta">
                           <span className="product-type">Category: {displayCategory}</span>
                           <span className="product-brand">Brand: {product.brand}</span>
                         </div>
-                          <div className="price-section">
-                            {discountInfo ? (
-                              <>
-                                <span className="original-price">R{originalPrice.toLocaleString()}</span>
-                                <span className="discounted-price">R{discountInfo.discountedPrice.toLocaleString()}</span>
-                                {discountInfo && (
-                            <span className="discount-percentage"> -{discountInfo.discountAmount}%</span>
+                        <div className="price-section">
+                          {discountInfo ? (
+                            <>
+                              <span className="original-price">R{originalPrice.toLocaleString()}</span>
+                              <span className="discounted-price">R{discountInfo.discountedPrice.toLocaleString()}</span>
+                              <span className="discount-percentage"> -{discountInfo.discountAmount}%</span>
+                            </>
+                          ) : (
+                            <span className="regular-price">R{originalPrice.toLocaleString()}</span>
                           )}
-                              </>
-                            ) : (
-                              <span className="regular-price">R{originalPrice.toLocaleString()}</span>
-                            )}
-                          </div>
+                        </div>
                         {/* Action Buttons */}
                         <div className="product-actions">
                           <CartlistButton product={product} />

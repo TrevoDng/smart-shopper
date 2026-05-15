@@ -47,8 +47,8 @@ export const productTypes: ProductMainType[] = [
   },
   {
     id: '3',
-    name: 'Clothes',
-    value: 'clothes',
+    name: 'Clothing',
+    value: 'clothing',
     icon: 'fa-tshirt',
     subTypes: [
       { id: '3-1', name: 'Jeans', value: 'jeans' },
