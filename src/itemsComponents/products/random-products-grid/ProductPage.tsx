@@ -114,7 +114,7 @@ const ProductPage: React.FC<ProductPageProps> = ({
       filtered = filterProductsByMainCategory(filtered, selectedMainCategory);
     }
 
-    return applyMultipleFilters(baseDataSource, {
+    return applyMultipleFilters(filtered, {
       selectedCategories,
       selectedBrands,
       priceRange
@@ -275,6 +275,7 @@ const ProductPage: React.FC<ProductPageProps> = ({
         <CategoryFilter
           products={baseDataSource}
           selectedCategories={selectedCategories}
+          selectedMaincategory={selectedMainCategory}
           selectedBrands={selectedBrands}
           priceRange={priceRange}
           onCategoryChange={handleCategoryChange}

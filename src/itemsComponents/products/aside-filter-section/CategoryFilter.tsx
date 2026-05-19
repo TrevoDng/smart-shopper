@@ -86,36 +86,39 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
 
     const hierarchy = new Map<string, Map<string, { fullPath: string; count: number }>>();
     
-    console.log("Filtered Products:", filteredProducts);
+    console.log("Filtered Products2:", selectedMaincategory);
 
     filteredProducts.forEach(product => {
       if (Array.isArray(product.category) && product.category.length > 0) {
         const fullPath = product.category[0];
-        const [mainCat, subCat] = fullPath.split('/');
+        const [mainCat, ...subCat] = fullPath.split('/');
+        // I used ...subCat for incase theres more than one subcategory name. 
         
         if (mainCat && subCat) {
           if (!hierarchy.has(mainCat)) {
             hierarchy.set(mainCat, new Map());
           }
+
+          const subCatPath = subCat.join('/');
           
-          const subMap = hierarchy.get(mainCat)!;
-          const existing = subMap.get(subCat);
+          const mainCatMap = hierarchy.get(mainCat)!;
+          const existing = mainCatMap.get(subCatPath);
           if (existing) {
             existing.count++;
           } else {
-            subMap.set(subCat, { fullPath, count: 1 });
+            mainCatMap.set(subCatPath, { fullPath, count: 1 });
           }
         }
       }
     });
     
-    // Convert to array and sort
+    // Convert to array and sort alphabetically
     const result = Array.from(hierarchy.entries())
       .map(([mainCat, subMap]) => ({
         mainCategory: mainCat,
         subCategories: Array.from(subMap.entries())
           .map(([subCat, { fullPath, count }]) => ({
-            name: subCat,
+            name: subCat.split('/').slice(-1)[0] || subCat, // Get last part of subcategory for display
             fullPath,
             count
           }))
@@ -230,9 +233,16 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
     
     // Apply category filter if any categories are selected
     if (selectedCategories.length > 0) {
-      filteredProducts = products.filter(product => 
+      filteredProducts = filteredProducts.filter(product => 
         Array.isArray(product.category) && 
         product.category.some(cat => selectedCategories.includes(cat))
+      );
+    }
+
+    if (selectedMaincategory) {
+      filteredProducts = filteredProducts.filter(product => 
+        Array.isArray(product.category) && 
+        product.category[0].startsWith(selectedMaincategory + '/')
       );
     }
     
@@ -242,7 +252,29 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
       .sort();
     
     return brands;
-  }, [products, selectedCategories]);
+  }, [products, selectedCategories, selectedMaincategory]);
+
+  // Memoized filtered products based on ALL current filters
+const filteredProductsForCounts = useMemo(() => {
+  let filtered = products;
+  
+  if (selectedMaincategory) {
+    filtered = filtered.filter(product => 
+      Array.isArray(product.category) && 
+      product.category.length > 0 &&
+      product.category[0].startsWith(selectedMaincategory + '/')
+    );
+  }
+  
+  if (selectedCategories.length > 0) {
+    filtered = filtered.filter(product => 
+      Array.isArray(product.category) && 
+      product.category.some(cat => selectedCategories.includes(cat))
+    );
+  }
+  
+  return filtered;
+}, [products, selectedMaincategory, selectedCategories]);
 
   // Count how many subcategories are selected
   const selectedCount = selectedCategories.length;
@@ -372,16 +404,9 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
             {allBrands.map(brand => {
               const isSelected = selectedBrands.includes(brand);
               // Count products for this brand based on current category selection
-              let brandProductCount = products.filter(product => {
-                if (selectedCategories.length > 0) {
-                  // If categories are selected, only count brands from those categories
-                  return product.brand === brand && 
-                         Array.isArray(product.category) && 
-                         product.category.some(cat => selectedCategories.includes(cat));
-                }
-                return product.brand === brand;
-              }).length;
-              
+              let brandProductCount = filteredProductsForCounts.filter(product => 
+                product.brand === brand).length;
+
               const displayBrandName = brand.length < 3 ? brand.toUpperCase() : textCase(brand);
               
               return (

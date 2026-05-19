@@ -48,7 +48,7 @@ const CategoryMainFilter: React.FC<CategoryMainFilterProps> = ({
             return () => clearTimeout(timer);
         };
 
-        //console.log("Filtered Products:", selectedMainCategory);
+        console.log("Selected Main Category: ", selectedMainCategory);
 
         return (
             <div className="item-services" data-page-id="top-slide-design">
