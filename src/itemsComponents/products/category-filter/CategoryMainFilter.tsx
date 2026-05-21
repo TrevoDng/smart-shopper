@@ -8,12 +8,16 @@ interface CategoryMainFilterProps {
     datas: Product[];
     selectedMainCategory: string | null ; // Changed from selectedCategory
     onSelectedMainCategory: (mainCategory: string | null) => void; // Changed to accept full path or null
+    onSelectedCategories: (categories: string[])=> void;
+    onBrandChange: (brands: string[])=> void;
 }
 
 const CategoryMainFilter: React.FC<CategoryMainFilterProps> = ({
         datas,
         selectedMainCategory,
-        onSelectedMainCategory
+        onSelectedMainCategory,
+        onSelectedCategories,
+        onBrandChange,
     }) => {
         const [loadingItem, setLoadingItem] = React.useState<string | null>(null);
 
@@ -35,14 +39,15 @@ const CategoryMainFilter: React.FC<CategoryMainFilterProps> = ({
 
         const handleCategoryClick = (mainCategoryValue: string, e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
             e.preventDefault();
-            
+            onSelectedCategories([]);
+            onBrandChange([]);
             setLoadingItem(mainCategoryValue);
             
             const timer = setTimeout(() => {
                 setLoadingItem(null);
                 
                 const isSameCategory = selectedMainCategory === mainCategoryValue;
-                onSelectedMainCategory(isSameCategory ? null : mainCategoryValue);
+                onSelectedMainCategory(isSameCategory ? selectedMainCategory : mainCategoryValue);
             }, 500);
             
             return () => clearTimeout(timer);

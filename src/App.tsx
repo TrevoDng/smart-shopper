@@ -523,6 +523,8 @@ const AppContent: React.FC = () => {
   datas={products} 
   selectedMainCategory={selectedMainCategory}  // Pass selectedCategories instead
   onSelectedMainCategory={setSelectedMainCategory}
+  onSelectedCategories={setSelectedCategories}
+  onBrandChange={setSelectedBrands}
 />
                 
                 <main className='main-content-container'>
