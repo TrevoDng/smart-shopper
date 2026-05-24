@@ -517,8 +517,9 @@ const AppContent: React.FC = () => {
                   onLoading={setLoadingDelay}
                   loading={loadingDelay}
                 />
-                
+                {!searchQuery &&
                 <SliderConditionalRenderer />
+                }
                 <CategoryMainFilter 
   datas={products} 
   selectedMainCategory={selectedMainCategory}  // Pass selectedCategories instead
