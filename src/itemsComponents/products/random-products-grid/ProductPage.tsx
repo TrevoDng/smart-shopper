@@ -261,13 +261,86 @@ const ProductPage: React.FC<ProductPageProps> = ({
   }
   */
 
-  if (!products || products.length === 0) {
-    return (
-      <div className="product-page-loading">
-        <p>No products found at the moment.</p>
+
+if (!products || products.length === 0) {
+  return (
+    <div 
+      className="empty-products-container"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        padding: '4rem 2rem',
+        minHeight: '400px',
+        background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+        borderRadius: '20px',
+        margin: '2rem auto',
+        maxWidth: '600px'
+      }}
+    >
+      <div
+        style={{
+          fontSize: '80px',
+          marginBottom: '1rem'
+        }}
+        role="img"
+        aria-label="shopping bag"
+      >
+        🛍️
       </div>
-    );
-  }
+      
+      <h2
+        style={{
+          fontSize: '28px',
+          color: '#2c3e50',
+          marginBottom: '1rem',
+          fontWeight: '600'
+        }}
+      >
+        No Products Found
+      </h2>
+      
+      <p
+        style={{
+          fontSize: '18px',
+          color: '#555',
+          marginBottom: '2rem',
+          lineHeight: '1.6'
+        }}
+      >
+        Our inventory is currently being updated. 
+        Please check back soon for amazing products!
+      </p>
+      
+      <button
+        onClick={() => window.location.reload()}
+        style={{
+          backgroundColor: '#3498db',
+          color: 'white',
+          border: 'none',
+          padding: '12px 30px',
+          fontSize: '16px',
+          borderRadius: '50px',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease',
+          boxShadow: '0 2px 10px rgba(52,152,219,0.3)'
+        }}
+        onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+          e.currentTarget.style.backgroundColor = '#2980b9';
+          e.currentTarget.style.transform = 'translateY(-2px)';
+        }}
+        onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+          e.currentTarget.style.backgroundColor = '#3498db';
+          e.currentTarget.style.transform = 'translateY(0)';
+        }}
+      >
+        🔄 Refresh Page
+      </button>
+    </div>
+  );
+}
 
   return (
     <div className="product-page">
