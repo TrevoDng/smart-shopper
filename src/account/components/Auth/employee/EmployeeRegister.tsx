@@ -1,8 +1,9 @@
 // EmployeeRegister.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { RegisterData } from '../../../types/user';
 import './EmployeeRegister.css';
+import { useSlider } from '../../../../slider/slidercontext/SliderContext';
 
 const EmployeeRegister: React.FC = () => {
   const { register, isLoading } = useAuth();
@@ -25,6 +26,11 @@ const EmployeeRegister: React.FC = () => {
     success: boolean;
     message: string;
   } | null>(null);
+   const { hideSlider } = useSlider();
+    // Hide slider on this page
+    useEffect(() => {
+      hideSlider();
+    }, [hideSlider]);
 
   const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api';
 
