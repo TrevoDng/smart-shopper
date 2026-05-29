@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import './AdminSetup.css';
+import { useSlider } from '../../../slider/slidercontext/SliderContext';
 
 const AdminSetup: React.FC = () => {
   const { user, isLoading: authLoading } = useAuth();
@@ -18,6 +19,11 @@ const AdminSetup: React.FC = () => {
   const [success, setSuccess] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [adminExists, setAdminExists] = useState<boolean | null>(null);
+  const { hideSlider } = useSlider();
+  // Hide slider on this page
+  useEffect(() => {
+    hideSlider();
+  }, [hideSlider]);
 
   // Check if any admin exists in the system
   useEffect(() => {

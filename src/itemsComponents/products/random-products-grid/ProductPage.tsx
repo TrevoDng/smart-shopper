@@ -251,11 +251,20 @@ const ProductPage: React.FC<ProductPageProps> = ({
   }
 
   // Show loading state if no products
-  if (!products || products.length === 0) {
+  /*if (!products || products.length === 0) {
     return (
       <div className="product-page-loading">
         <div className="loading-spinner"></div>
         <p>Loading products...</p>
+      </div>
+    );
+  }
+  */
+
+  if (!products || products.length === 0) {
+    return (
+      <div className="product-page-loading">
+        <p>No products found at the moment.</p>
       </div>
     );
   }

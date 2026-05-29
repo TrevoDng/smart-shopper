@@ -1,0 +1,17 @@
+# Simple Dockerfile - just serve pre-built React app
+FROM nginx:alpine
+
+# Create directory if it doesn't exist
+RUN mkdir -p /usr/share/nginx/html
+
+# Copy the already-built React files (using absolute path reference)
+COPY ./build /usr/share/nginx/html
+
+# Copy nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
