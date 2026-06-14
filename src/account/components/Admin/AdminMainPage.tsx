@@ -132,7 +132,7 @@ const AdminMainPage: React.FC = () => {
               icon="🔑"
               value={stats.activeInviteCodes}
               description="Active employee invite codes"
-              linkTo="/admin/invite-codes"
+              linkTo="/admin/registration-invite-codes"
               badge={stats.activeInviteCodes}
               color="#f59e0b"
             />

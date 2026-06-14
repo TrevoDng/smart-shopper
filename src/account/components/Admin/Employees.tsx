@@ -387,8 +387,8 @@ const Employees: React.FC = () => {
                       <span className={getStatusBadgeClass(employee.status)}>
                         {getStatusText(employee.status)}
                       </span>
-                      {!employee.emailVerified && employee.status !== 'deactivated' && employee.status !== 'rejected' && (
-                        <span className="email-warning">⚠️ Email not verified</span>
+                      {employee.status === "pending_email" || employee.status === 'deactivated' || employee.status === 'rejected' && (
+                        <span className="email-warning">⚠️ Email {employee.status}</span>
                       )}
                     </td>
                     <td className="date-cell">

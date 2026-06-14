@@ -260,7 +260,7 @@ const SingleOpenedProductPage: React.FC<OpenedProductPageProps>=({
                           <button 
                             className="add-to-cart" 
                             id="addToCart" 
-                            disabled={!selectedSize}
+                            disabled={matchedProduct.category === 'clothing' ? !selectedSize : false}
                             onClick={handleAddToCart}
                           >
                             <i className="fas fa-shopping-cart"></i>Add to Cart

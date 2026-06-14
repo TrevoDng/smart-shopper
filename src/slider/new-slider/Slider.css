@@ -111,8 +111,8 @@
 /* Category badge */
 .category-badge {
   position: absolute;
-  top: 1.5rem;
-  left: 1.5rem;
+  bottom: 1.5rem;
+  right: 1.5rem;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(4px);
   color: white;
@@ -207,6 +207,28 @@
   background: white;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap');
+
+.slider-title h1 {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 3rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--text-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+}
+
+.slider-title p {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
   .slider-section {
@@ -264,12 +286,7 @@
     font-size: 1.2rem;
   }
 
-  .category-badge {
-    top: 1rem;
-    left: 1rem;
-    font-size: 0.8rem;
-    padding: 0.4rem 1rem;
-  }
+
 
   .dots {
     bottom: 0.7rem;

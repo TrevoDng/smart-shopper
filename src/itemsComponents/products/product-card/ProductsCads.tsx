@@ -5,6 +5,7 @@ import { LoadingProduct } from "../LoadingProduct";
 import "./ProductsCads.css";
 import ProductsCardsProps from "./ProductsCardsProps";
 import { useNavigate } from "react-router-dom";
+import { getFullImageUrl } from "../utils/getFullImageUrl";
 
 
 
@@ -47,7 +48,7 @@ const ProductsCards: React.FC<ProductsCardsProps> =({
         <LoadingProduct loadingClass={"loading-product"}/> // Replace with your actual LoadingAnimation component
       )}
       <div className="img-container">
-        <img src={product.imgSrc[0]} alt={product.title} />
+        <img src={getFullImageUrl(product.imgSrc[0])} alt={product.title} />
         <button className="wishlist-btn item-icon-container">
           <i className="fa-regular fa-heart item-heart-icon" />
         </button>

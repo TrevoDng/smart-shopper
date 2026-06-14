@@ -62,6 +62,8 @@ import ProductPage from './itemsComponents/products/random-products-grid/Product
 import { productsApi } from './services/productsApi';
 import { useDiscounts } from './hooks/useDiscounts';
 import CategoryMainFilter from './itemsComponents/products/category-filter/CategoryMainFilter';
+import RegistrationInviteCode from './account/components/Admin/RegistrationInviteCode';
+import Admins from './account/components/Admin/Admins';
 
 const SliderConditionalRenderer: React.FC = () => {
   const { isSliderVisible } = useSlider();
@@ -131,7 +133,7 @@ const ProductMainPage: React.FC<ProductMainPageProps> = ({
   loading,
 }) => {
   return (
-    <div>
+    <div className='products-page-container'>
       <div className='main-page-content'>
         <div className='products-main-container-cover'>
           {searchedQuery.length < 3 ? (
@@ -374,6 +376,8 @@ const MainPageController: React.FC<MainPageControllerProps> = ({
         <Route path='/admin/registration-requests' element={<RegistrationRequests />} />
         <Route path='/admin/pending-products' element={<PendingProducts />} />
         <Route path='/admin/clients' element={<Clients />} />
+        <Route path="/admin/registration-invite-codes" element={<RegistrationInviteCode />} />
+        <Route path="/admin/admins" element={<Admins />} />
         <Route path='/admin/employees' element={<Employees />} />
         <Route path='/admin/employee-performance' element={<EmployeesPerformance />} />
         <Route path='/admin/products' element={<Products />} />

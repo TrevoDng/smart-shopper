@@ -1,10 +1,32 @@
 /* TopNavbar.css - Theme‑aware version */
 
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.brand-smart, .brand-shopper {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Keep the gradient consistent in both themes, but add slight opacity adjustment for dark mode */
+[data-theme="dark"] .brand-smart,
+[data-theme="dark"] .brand-shopper {
+  background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 body {
@@ -21,6 +43,8 @@ body {
   top: 0;
   padding: 0 15px;
   z-index: 1000;
+  padding-left: 100px;
+  padding-right: 100px;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -34,13 +58,14 @@ body {
 .nav-left {
   display: flex;
   align-items: center;
+  padding: auto 200px;
 }
 
 /* Website Brand */
 .website-brand {
   display: flex;
   align-items: center;
-  margin-right: 30px;
+  margin-right: 10px;
   flex-shrink: 0;
 }
 
@@ -50,7 +75,7 @@ body {
   gap: 6px;
   text-decoration: none;
   font-weight: 700;
-  font-size: 1.5rem;
+  font-size: 1.0rem;
   white-space: nowrap;
   transition: all 0.3s ease;
 }
@@ -91,6 +116,7 @@ body {
   text-decoration: none;
   color: var(--text-primary);
   font-weight: 500;
+  font-weight: bold;
   transition: color 0.3s;
 }
 
@@ -148,6 +174,10 @@ body {
   color: var(--text-primary);
   font-size: 1.2rem;
   position: relative;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-weight: bold;
   background: none;
   border: none;
   cursor: pointer;
@@ -244,6 +274,10 @@ body {
 
 /* Responsive */
 @media (max-width: 992px) {
+  .navbar {
+    background-color: #ff4646;
+    padding: auto 100px !important;
+  }
   .search-box input {
     width: 180px;
   }

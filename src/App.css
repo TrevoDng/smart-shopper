@@ -90,6 +90,11 @@ body {
   color: var(--primary);
 }
 
+.products-page-container {
+  padding: 20px;
+  width: auto !important;
+}
+
 @media (max-width: 768px) {
   body {
     padding: 0px !important;

@@ -17,17 +17,17 @@ const Slider: React.FC = () => {
 
   const slides: Slide[] = [
     {
-      src: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&h=400&fit=crop",
+      src: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=800&h=500&fit=crop", //"https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&h=500&fit=crop",
       alt: "Laptop on a table",
       category: "Laptops"
     },
     {
-      src: "https://images.unsplash.com/photo-1511385348-a52b4a160dc2?w=600&h=400&fit=crop",
+      src: "https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=400&h=300&fit=crop",
       alt: "Computer screen setup",
-      category: "Computer Screen"
+      category: "Monitors"
     },
     {
-      src: "https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=600&h=400&fit=crop",
+      src: "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=500&fit=crop",
       alt: "Desktop computer",
       category: "Desktop"
     }
@@ -95,7 +95,8 @@ const Slider: React.FC = () => {
     <div className="slider-section">
       <div className="slider-content">
         <div className="slider-title">
-          <h1>Shop with purpose. Connect with trust.</h1>
+          <h1>Everything You Need, Delivered with a Smile.</h1>
+          {/* <h1>Shop with purpose. Connect with trust.</h1>*/ }
           <p>
             Welcome to Eisle-Net - Where we bring you 
             a world of products through the power of connection.

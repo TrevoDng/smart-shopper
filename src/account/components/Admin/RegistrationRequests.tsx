@@ -113,7 +113,7 @@ const RegistrationRequests: React.FC = () => {
   };
 
   const getStatusBadge = (request: RegistrationRequest) => {
-    if (!request.emailVerified) {
+    if (request.status === 'pending_email') {
       return <span className="request-status status-pending-email">Pending Email Verification</span>;
     }
     if (request.status === 'pending_approval') {
@@ -123,7 +123,9 @@ const RegistrationRequests: React.FC = () => {
   };
 
   const canApprove = (request: RegistrationRequest) => {
-    return request.emailVerified === true;
+    return request.status === 'pending_approval';
+    //return request.emailVerified === true;
+    //return request.status === 'pending_approval' && request.emailVerified;
   };
 
   if (loading) {

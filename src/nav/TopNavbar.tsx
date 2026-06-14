@@ -51,9 +51,9 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
         <div className="nav-left">
           <div className="website-brand">
             <a href="/" className="brand-link">
-              <span className="brand-text brand-smart">Eisle</span>
-              <i className="fa-solid fa-bag-shopping brand-icon"></i>
-              <span className="brand-text brand-shopper">NET</span>
+              <span className="brand-text brand-smart">AISLE-NET</span>
+              {/* <i className="fa-solid fa-bag-shopping brand-icon"></i> */}
+              <span className="brand-text brand-shopper"></span>
             </a>
           </div>
           
