@@ -1,5 +1,6 @@
 // src/services/productsApi.ts
 import { getToken } from '../account/context/AuthContext';
+import { Size } from '../itemsComponents/products/types/Product';
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api';
 
@@ -13,6 +14,7 @@ export interface Product {
   status: 'pending' | 'approved' | 'rejected';
   price: number;
   stockQuantity: number;
+  sizes: Size[];
   imgSrc: string[];
   employeeId: string;
   employeeName: string;

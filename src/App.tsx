@@ -380,6 +380,7 @@ const MainPageController: React.FC<MainPageControllerProps> = ({
         <Route path="/admin/admins" element={<Admins />} />
         <Route path='/admin/employees' element={<Employees />} />
         <Route path='/admin/employee-performance' element={<EmployeesPerformance />} />
+        <Route path='/admin/add-product' element={<AddProduct />} />
         <Route path='/admin/products' element={<Products />} />
         <Route path='/admin/products-performance' element={<ProductsPerformance />} />
         <Route path='/admin/products-sales' element={<Sales />} />
@@ -426,8 +427,10 @@ const AppContent: React.FC = () => {
         const response = await productsApi.getPublicApprovedProducts();
         const transformedProducts = response.products.map(product => ({
           ...product,
-          price: String(product.price)
+          price: String(product.price),
+          sizes: product.sizes
         }));
+        console.log("Transformed Products: ", transformedProducts);
         setProducts(transformedProducts);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load products');

@@ -1,4 +1,12 @@
 // src/itemsComponents/products/types/Product.ts
+
+export interface Size {
+  code: string;
+  name: string;
+  type: "string" | "number";
+  quantity: number;
+}
+
 export interface Product {
   id: string;
   category: string[];
@@ -7,7 +15,7 @@ export interface Product {
   description: string;
   price: string;
   currency?: string;
-  size?: string;
+  sizes: Size[];
   imgSrc: string[];
   longDescription: string;
 }

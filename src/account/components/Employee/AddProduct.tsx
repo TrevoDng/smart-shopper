@@ -14,8 +14,22 @@ interface ProductFormData {
   title: string;
   description: string;
   price: string;
+  sizes: Size[];
   stockQuantity: string;
   longDescription: string;
+}
+
+interface Notification {
+  message: string;
+  type: string;
+  visible: boolean;
+}
+
+interface Size {
+  code: string;
+  name: string;
+  quantity: number; 
+  type: "string" | "number";
 }
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api';
@@ -27,6 +41,12 @@ const AddProduct: React.FC = () => {
   const [selectedMainType, setSelectedMainType] = useState<ProductMainType>(productTypes[0]);
   const [selectedSubType, setSelectedSubType] = useState<ProductSubType>(productTypes[0]?.subTypes[0]);
   const [availableSubTypes, setAvailableSubTypes] = useState<ProductSubType[]>(productTypes[0]?.subTypes || []);
+  const [selectedSizes, setSelectedSizes] = useState<Size[]>([]);
+  const [notification, setNotification] = useState<Notification>({
+    message: '',
+    type: '',
+    visible: false
+  })
   
   const [formData, setFormData] = useState<ProductFormData>({
     category: [`${productTypes[0]?.value}/${productTypes[0]?.subTypes[0]?.value}`],
@@ -34,6 +54,7 @@ const AddProduct: React.FC = () => {
     title: '',
     description: '',
     price: '',
+    sizes: [],
     stockQuantity: '1',
     longDescription: ''
   });
@@ -56,6 +77,92 @@ const AddProduct: React.FC = () => {
   const { hideSlider } = useSlider();
   hideSlider();
 
+  // Available size options (without stock info)
+const availableSizes: Size[] = [
+  { code: "XS", name: "Extra Small (US 5)", type: "string", quantity: 0 },
+  { code: "S", name: "Small (US 6-7)", type: "string", quantity: 0 },
+  { code: "M", name: "Medium (US 8-9)", type: "string", quantity: 0 },
+  { code: "L", name: "Large (US 10-11)", type: "string", quantity: 0 },
+  { code: "XL", name: "Extra Large (US 12-13)", type: "string", quantity: 0 },
+  { code: "6", name: "Size 6 (EU 39)", type: "number", quantity: 0 },
+  { code: "7", name: "Size 7 (EU 40)", type: "number", quantity: 0 },
+  { code: "8.5", name: "Size 8.5 (EU 42)", type: "number", quantity: 0 },
+  { code: "10", name: "Size 10 (EU 44)", type: "number", quantity: 0 },
+  { code: "One Size", name: "One Size Fits All", type: "string", quantity: 0 }
+];
+
+/*
+  const handleSizeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const selectedSize = e.target.value;
+    if (selectedSize) {
+      const size = availableSizes.find(s => 
+        s.code === selectedSize || s.code.toString() === selectedSize);
+      
+        if (size) {
+          setSelectedSizes([size]);
+          setFormData(prev => ({...prev, sizes: size.code }));
+          showNotification(`Size ${size} is selected`, 'success');
+        }
+        console.log('Form Data:', formData);
+    } else {
+      setSelectedSizes([]);
+      setFormData(prev => ({...prev, sizes: []}));
+    }
+  }
+  */
+
+  const handleAddSize = (sizeCode: string, quantity: number) => {
+  // Check if size already exists
+  const existingSizeIndex = selectedSizes.findIndex(s => s.code === sizeCode);
+  
+  if (existingSizeIndex >= 0) {
+    // Update quantity if size already exists
+    const updatedSizes = [...selectedSizes];
+    updatedSizes[existingSizeIndex] = {
+      ...updatedSizes[existingSizeIndex],
+      quantity: quantity
+    };
+    setSelectedSizes(updatedSizes);
+    // Update formData as well
+    setFormData(prev => ({ ...prev, sizes: updatedSizes }));
+    showNotification(`Updated ${sizeCode} quantity to ${quantity}`, 'success');
+  } else {
+    // Add new size
+    const sizeToAdd = availableSizes.find(s => s.code === sizeCode);
+    if (sizeToAdd) {
+      const newSize = { ...sizeToAdd, quantity };
+      const updatedSizes = [...selectedSizes, newSize];
+      setSelectedSizes(updatedSizes);
+      setFormData(prev => ({ ...prev, sizes: updatedSizes }));
+      showNotification(`Added ${sizeCode} with quantity ${quantity}`, 'success');
+    }
+  }
+};
+
+const handleRemoveSize = (sizeCode: string) => {
+  const updatedSizes = selectedSizes.filter(s => s.code !== sizeCode);
+  setSelectedSizes(updatedSizes);
+  setFormData(prev => ({ ...prev, sizes: updatedSizes }));
+  showNotification(`Removed ${sizeCode}`, 'info');
+};
+
+// Update quantity for an existing size
+const handleUpdateQuantity = (sizeCode: string, newQuantity: number) => {
+  const updatedSizes = selectedSizes.map(s => 
+    s.code === sizeCode ? { ...s, quantity: newQuantity } : s
+  );
+  setSelectedSizes(updatedSizes);
+  console.log('Updated Sizes:', updatedSizes);
+  setFormData(prev => ({ ...prev, sizes: updatedSizes }));
+};
+
+  const showNotification = (message: string, type: string): void => {
+    setNotification({message, type, visible: true});
+    setTimeout(() => {
+      setNotification(prev => ({...prev, visible: false}));
+    }, 3000)
+  }
+
   // Update subTypes when main type changes
   useEffect(() => {
     const mainType = productTypes.find(t => t.value === selectedMainType?.value);
@@ -73,6 +180,13 @@ const AddProduct: React.FC = () => {
       }
     }
   }, [selectedMainType?.value]);
+
+  useEffect(() => {
+    if (selectedMainType.value === "clothing") {
+      const totalStock = selectedSizes.reduce((sum, size) => sum + size.quantity, 0);
+      setFormData(prev => ({ ...prev, stockQuantity: totalStock.toString() }));
+    }
+  }, [selectedSizes, selectedMainType.value]);
 
   // Handle main type change
   const handleMainTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -130,6 +244,11 @@ const AddProduct: React.FC = () => {
       setSubmitError('Valid price is required');
       return;
     }
+
+    if (selectedMainType.value === "clothing" && formData.sizes.length === 0) {
+  setSubmitError('Please add at least one size for clothing items');
+  return;
+}
     
     if (!hasImages) {
       setSubmitError('Please upload at least one product image');
@@ -175,6 +294,7 @@ const AddProduct: React.FC = () => {
           description: formData.description,
           longDescription: formData.longDescription,
           price: parseFloat(formData.price),
+          sizes: formData.sizes,
           stockQuantity: parseInt(formData.stockQuantity),
           imgSrc: imageUrls
         })
@@ -199,6 +319,7 @@ const AddProduct: React.FC = () => {
         title: '',
         description: '',
         price: '',
+        sizes: [],
         stockQuantity: '1',
         longDescription: ''
       });
@@ -336,7 +457,8 @@ const AddProduct: React.FC = () => {
               disabled={isSubmitting || isUploading}
             />
           </div>
-
+              
+          { /*selectedMainType.value !== "clothing" && */ 
           <div className="form-group">
             <label htmlFor="stockQuantity">Stock Quantity *</label>
             <input
@@ -352,7 +474,100 @@ const AddProduct: React.FC = () => {
               disabled={isSubmitting || isUploading}
             />
           </div>
+          }
         </div>
+
+        {selectedMainType.value === "clothing" && (
+  <div className="form-row">
+    <div className="form-group full-width">
+      <label>Product Sizes & Quantities</label>
+      
+      {/* Size selection and quantity input */}
+      <div className="size-input-row">
+        <select 
+          className="dropdown-select" 
+          id="sizeDropdown"
+          defaultValue=""
+          style={{ flex: 2, marginRight: '10px' }}
+        >
+          <option value="" disabled>Select a size to add</option>
+          {availableSizes
+            .filter(size => !selectedSizes.some(s => s.code === size.code))
+            .map(size => (
+              <option key={size.code} value={size.code}>
+                {size.name}
+              </option>
+            ))}
+        </select>
+        
+        <input
+          type="number"
+          placeholder="Quantity"
+          min="0"
+          step="1"
+          defaultValue="1"
+          style={{ flex: 1, marginRight: '10px', padding: '10px' }}
+          id="sizeQuantityInput"
+        />
+        
+        <button
+          type="button"
+          onClick={() => {
+            const select = document.getElementById('sizeDropdown') as HTMLSelectElement;
+            const quantityInput = document.getElementById('sizeQuantityInput') as HTMLInputElement;
+            const sizeCode = select.value;
+            const quantity = parseInt(quantityInput.value) || 1;
+            
+            if (sizeCode && quantity > 0) {
+              handleAddSize(sizeCode, quantity);
+              select.value = '';
+              quantityInput.value = '1';
+            } else {
+              showNotification('Please select a size and enter a valid quantity', 'error');
+            }
+          }}
+          className="add-size-button"
+          style={{ flex: 0.5, padding: '10px 20px' }}
+        >
+          Add Size
+        </button>
+      </div>
+      
+      {/* Display selected sizes with quantities */}
+      {selectedSizes.length > 0 && (
+        <div className="selected-sizes-list">
+          <h4>Added Sizes:</h4>
+          {selectedSizes.map((size, index) => (
+            <div key={index} className="size-item">
+              <span className="size-name">{size.name}</span>
+              <div className="size-quantity-control">
+                <input
+                  type="number"
+                  value={size.quantity}
+                  min="0"
+                  step="1"
+                  onChange={(e) => handleUpdateQuantity(size.code, parseInt(e.target.value) || 0)}
+                  className="quantity-input-small"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveSize(size.code)}
+                  className="remove-size-button"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      
+      <small className="hint">
+        Add each size variant with its available quantity. You can add multiple sizes for clothing items.
+      </small>
+    </div>
+  </div>
+)}
 
         <div className="form-group">
           <label htmlFor="description">Short Description *</label>

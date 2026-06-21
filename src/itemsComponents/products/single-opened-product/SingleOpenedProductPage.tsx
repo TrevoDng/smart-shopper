@@ -9,6 +9,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getPaymentMethodSelector } from "../cart/checkout/all-payments-options/getPaymentMethod";
 import PaymentMethodSelector from "../cart/checkout/all-payments-options/PaymentMethodSelector";
 import { getFullImageUrl } from "../utils/getFullImageUrl";
+import Cart from "../cart/components/cart-new/Cart";
+import { CartlistButton } from "../cart/components/CartlistButton";
 
 interface OpenedProductPageProps {
     itemsData: Product[];
@@ -20,7 +22,7 @@ interface OpenedProductPageProps {
 interface Size {
   code: string;
   name: string;
-  inStock: boolean;
+  quantity: number;
   type: "string" | "number";
 }
 
@@ -107,20 +109,20 @@ const SingleOpenedProductPage: React.FC<OpenedProductPageProps>=({
     setImgIndex(index);
   }
 
-   const hasSizeOptions = matchedProduct?.size && matchedProduct?.size.length > 0;
+   const hasSizeOptions = matchedProduct?.sizes && matchedProduct?.sizes.length > 0;
 
   // Sample size data - in a real app this would come from props or API
   const sizeData: { sizes: Size[] } = {
     sizes: [
-      { code: "XS", name: "Extra Small (US 5)", inStock: true, type: "string" },
-      { code: "S", name: "Small (US 6-7)", inStock: true, type: "string" },
-      { code: "M", name: "Medium (US 8-9)", inStock: true, type: "string" },
-      { code: "L", name: "Large (US 10-11)", inStock: false, type: "string" },
-      { code: "6", name: "Size 6 (EU 39)", inStock: true, type: "number" },
-      { code: "7", name: "Size 7 (EU 40)", inStock: true, type: "number" },
-      { code: "8.5", name: "Size 8.5 (EU 42)", inStock: true, type: "number" },
-      { code: "10", name: "Size 10 (EU 44)", inStock: false, type: "number" },
-      { code: "One Size", name: "One Size Fits All", inStock: true, type: "string" }
+      { code: "XS", name: "Extra Small (US 5)", quantity: 10, type: "string" },
+      { code: "S", name: "Small (US 6-7)", quantity: 15, type: "string" },
+      { code: "M", name: "Medium (US 8-9)", quantity: 20, type: "string" },
+      { code: "L", name: "Large (US 10-11)", quantity: 0, type: "string" },
+      { code: "6", name: "Size 6 (EU 39)", quantity: 25, type: "number" },
+      { code: "7", name: "Size 7 (EU 40)", quantity: 30, type: "number" },
+      { code: "8.5", name: "Size 8.5 (EU 42)", quantity: 35, type: "number" },
+      { code: "10", name: "Size 10 (EU 44)", quantity: 40, type: "number" },
+      { code: "One Size", name: "One Size Fits All", quantity: 45, type: "string" }
     ]
   };
 
@@ -151,6 +153,7 @@ const SingleOpenedProductPage: React.FC<OpenedProductPageProps>=({
 
   const handleAddToCart = (): void => {
     if (selectedSize) {
+      
       showNotification(`Added ${matchedProduct!.title} (Size: ${selectedSize.code}) to cart`, 'success');
       //data will be sent to database from here. 
     }
@@ -218,26 +221,27 @@ const SingleOpenedProductPage: React.FC<OpenedProductPageProps>=({
                     
                       <div className="product-container">
                         {hasSizeOptions && (
-                        <div className="size-selector">
-                          <span className="size-title">Select Size</span>
-                          <div className="custom-dropdown">
-                            <select 
-                              className="dropdown-select" 
-                              id="sizeDropdown"
-                              onChange={handleSizeChange}
-                              defaultValue=""
-                            >
-                              <option value="" disabled>Choose your size</option>
-                              {sizeData.sizes.map(size => (
-                                <option 
-                                  key={size.code} 
-                                  value={size.code}
-                                  disabled={!size.inStock}
-                                >
-                                  {size.code} - {size.name}{!size.inStock && " (Out of Stock)"}
-                                </option>
-                              ))}
-                            </select>
+  <div className="size-selector">
+    <span className="size-title">Select Size</span>
+    <div className="custom-dropdown">
+      <select 
+        className="dropdown-select" 
+        id="sizeDropdown"
+        onChange={handleSizeChange}
+        defaultValue=""
+      >
+        <option value="" disabled>Choose your size</option>
+        {/* Use dynamic sizes from product */}
+        {matchedProduct.sizes.map((size: Size) => (
+          <option 
+            key={size.code} 
+            value={size.code}
+            disabled={size.quantity <= 0}  // Disable if out of stock
+          >
+            {size.name} {size.quantity > 0 ? `(${size.quantity} in stock)` : '(Out of Stock)'}
+          </option>
+        ))}
+      </select>
                           </div>
                           <span 
                             className="size-guide" 
@@ -263,8 +267,9 @@ const SingleOpenedProductPage: React.FC<OpenedProductPageProps>=({
                             disabled={matchedProduct.category === 'clothing' ? !selectedSize : false}
                             onClick={handleAddToCart}
                           >
-                            <i className="fas fa-shopping-cart"></i>Add to Cart
+                            <CartlistButton product={matchedProduct}/>Add to Cart
                           </button>
+                          
                           <button className="buy-now" 
                           onClick={()=> setShowPopup(true)}>
                             <i className="fas fa-bolt"></i> Buy Now
