@@ -151,7 +151,7 @@
 
 .add-to-cart {
     background-color: #3498db;
-    color: white;
+    color: white !important;
 }
 
 .add-to-cart:hover {

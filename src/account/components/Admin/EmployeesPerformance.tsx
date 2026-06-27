@@ -18,47 +18,9 @@ interface EmployeeProduct {
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api';
 
-const EmployeesPerformance: React.FC = () => {
-  const [employeeProducts, setEmployeeProducts] = useState<EmployeeProduct[]>([]);
-  const [filteredData, setFilteredData] = useState<EmployeeProduct[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const fetchEmployeeProducts = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      const response = await fetch(`${API_BASE}/admin/employees-performance`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
-        const productsList = data.data || [];
-        setEmployeeProducts(productsList);
-        setFilteredData(productsList);
-      } else {
-
-        setEmployeeProducts(sampleData);
-        setFilteredData(sampleData);
-        setError(data.message || 'Failed to fetch employee performance data');
-      }
-    } catch (err: any) {
-      setError(err.message || 'An error occurred');
-      // Use sample data if API is not ready
-      setEmployeeProducts(sampleData);
-      setFilteredData(sampleData);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Sample data for when API is not ready
-  const sampleData: EmployeeProduct[] = [
+// Helper function to get sample data
+const getSampleData = (): EmployeeProduct[] => {
+  return [
     {
       id: '1',
       employeeId: 'emp1',
@@ -115,12 +77,60 @@ const EmployeesPerformance: React.FC = () => {
       status: 'approved'
     }
   ];
+};
+
+const EmployeesPerformance: React.FC = () => {
+  const [employeeProducts, setEmployeeProducts] = useState<EmployeeProduct[]>([]);
+  const [filteredData, setFilteredData] = useState<EmployeeProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const fetchEmployeeProducts = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/products/admin/employees-performance`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await response.json();
+      console.log(data);
+      
+      if (response.ok && data.success) {
+        const productsList = Array.isArray(data.data) ? data.data : [];
+        setEmployeeProducts(productsList);
+        setFilteredData(productsList);
+      } else {
+        const sampleDataList = getSampleData();
+        setEmployeeProducts(sampleDataList);
+        setFilteredData(sampleDataList);
+        setError(data.message || 'Failed to fetch employee performance data');
+      }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+      const sampleDataList = getSampleData();
+      setEmployeeProducts(sampleDataList);
+      setFilteredData(sampleDataList);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchEmployeeProducts();
   }, []);
 
   useEffect(() => {
+    // Ensure employeeProducts is an array before filtering
+    if (!Array.isArray(employeeProducts)) {
+      console.error('employeeProducts is not an array:', employeeProducts);
+      setFilteredData([]);
+      return;
+    }
+
     const filtered = employeeProducts.filter(item =>
       item.employeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.productTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -130,8 +140,8 @@ const EmployeesPerformance: React.FC = () => {
     setPage(0);
   }, [searchTerm, employeeProducts]);
 
-  // Calculate employee totals
-  const employeeTotals = filteredData.reduce((acc, item) => {
+  // Calculate employee totals - only if filteredData is an array
+  const employeeTotals = Array.isArray(filteredData) ? filteredData.reduce((acc, item) => {
     if (!acc[item.employeeId]) {
       acc[item.employeeId] = {
         employeeName: item.employeeName,
@@ -145,7 +155,7 @@ const EmployeesPerformance: React.FC = () => {
     acc[item.employeeId].totalSold += item.soldCount;
     acc[item.employeeId].totalInStock += item.stockQuantity;
     return acc;
-  }, {} as Record<string, { employeeName: string; employeeEmail: string; totalProducts: number; totalSold: number; totalInStock: number }>);
+  }, {} as Record<string, { employeeName: string; employeeEmail: string; totalProducts: number; totalSold: number; totalInStock: number }>) : {};
 
   const employeeSummary = Object.values(employeeTotals);
 
@@ -171,8 +181,8 @@ const EmployeesPerformance: React.FC = () => {
 
   const startIndex = page * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
-  const paginatedData = filteredData.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  const paginatedData = Array.isArray(filteredData) ? filteredData.slice(startIndex, endIndex) : [];
+  const totalPages = Math.ceil((Array.isArray(filteredData) ? filteredData.length : 0) / rowsPerPage);
 
   return (
     <AdminLayout>
@@ -282,7 +292,7 @@ const EmployeesPerformance: React.FC = () => {
           </table>
         </div>
 
-        {filteredData.length > 0 && (
+        {Array.isArray(filteredData) && filteredData.length > 0 && (
           <div className="pagination">
             <div className="pagination-info">
               Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} products

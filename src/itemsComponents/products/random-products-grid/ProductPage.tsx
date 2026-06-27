@@ -1,6 +1,6 @@
 // src/itemsComponents/products/random-products-grid/ProductPage.tsx
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
-import { Product } from "../types/Product";
+import { Product, Size } from "../types/Product";
 import "./ProductPage.css";
 import { LoadingProduct } from "../LoadingProduct";
 import { useNavigate } from "react-router-dom";
@@ -38,6 +38,7 @@ interface ProductPageProps {
   onItemId: (id: string) => void;
   onLoading: (id: string | null) => void;
   loading?: string | null;
+  selectedSize: Size | null;
 }
 
 const ProductPage: React.FC<ProductPageProps> = ({
@@ -58,6 +59,7 @@ const ProductPage: React.FC<ProductPageProps> = ({
   onItemId,
   onLoading,
   loading,
+  selectedSize
 }) => {
   const [showFilter, setShowFilter] = useState(false);
   
@@ -534,7 +536,9 @@ if (!products || products.length === 0) {
                         </div>
                         {/* Action Buttons */}
                         <div className="product-actions">
-                          <CartlistButton product={product} />
+                          <CartlistButton 
+                          product={product} 
+                          selectedSize={selectedSize}/>
                           <WishlistButton product={product} />
                         </div>
                       </div>

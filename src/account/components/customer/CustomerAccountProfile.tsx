@@ -3,12 +3,16 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useSlider } from '../../../slider/slidercontext/SliderContext';
 import './CustomerAccountProfile.css';
+import { useMainCategoryContext } from '../../../itemsComponents/products/category-filter/context/MainCategoryFilterContext';
 
 const AccountProfile: React.FC = () => {
   const { user, logout } = useAuth();
   
     const {hideSlider} = useSlider();
-      hideSlider();
+    const {hideMainCategory} = useMainCategoryContext();
+             //hide slider
+                 hideSlider();
+                 hideMainCategory();
 
   if (!user) {
     return null;

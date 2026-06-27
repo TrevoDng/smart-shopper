@@ -4,6 +4,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { LoginCredentials } from '../../../types/user';
 import { useSlider } from '../../../../slider/slidercontext/SliderContext';
 import './CustomerLogin.css';
+import { useMainCategoryContext } from '../../../../itemsComponents/products/category-filter/context/MainCategoryFilterContext';
 
 const CustomerLogin: React.FC = () => {
   const { login, isLoading, user, isAuthenticated } = useAuth();
@@ -16,7 +17,10 @@ const CustomerLogin: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState('');
 
   const { hideSlider } = useSlider();
-  hideSlider();
+  const {hideMainCategory} = useMainCategoryContext();
+           //hide slider
+               hideSlider();
+               hideMainCategory();
 
   // Check for URL params (e.g., after registration or email verification)
   useEffect(() => {

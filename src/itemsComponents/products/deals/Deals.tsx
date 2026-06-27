@@ -1,11 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useSlider } from "../../../slider/slidercontext/SliderContext";
+import { useMainCategoryContext } from "../category-filter/context/MainCategoryFilterContext";
 
 const Deals: React.FC=()=> {
     const navigate = useNavigate();
     const {hideSlider} = useSlider();
-             //hide slider
-                 hideSlider();
+    const {hideMainCategory} = useMainCategoryContext();
+                 //hide slider
+                     hideSlider();
+                     hideMainCategory();
     
     const returnHome=()=> {
         navigate('/');    

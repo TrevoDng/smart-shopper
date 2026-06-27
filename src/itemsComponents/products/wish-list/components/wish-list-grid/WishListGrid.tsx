@@ -5,6 +5,7 @@ import { useSlider } from "../../../../../slider/slidercontext/SliderContext";
 import { useWishlist } from "../../context/WishlistContext";
 
 import './WishlistGrid.css';
+import { useMainCategoryContext } from "../../../category-filter/context/MainCategoryFilterContext";
 
 interface WishListCardsProps {
     //product: ProductCategory[];
@@ -26,8 +27,10 @@ const WishListGrid: React.FC<WishListCardsProps>=({
     const { removeFromWishlist, wishlist } = useWishlist();
     const navigate = useNavigate();
     const {hideSlider} = useSlider();
-
-    hideSlider();
+    const {hideMainCategory} = useMainCategoryContext();
+             //hide slider
+        hideSlider();
+        hideMainCategory();
 
     const handleRemove =(id: any)=> {
         removeFromWishlist(id);

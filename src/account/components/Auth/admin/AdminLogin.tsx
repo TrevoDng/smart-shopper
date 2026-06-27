@@ -4,6 +4,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { LoginCredentials } from '../../../types/user';
 import './AdminLogin.css';
 import { useSlider } from '../../../../slider/slidercontext/SliderContext';
+import { useMainCategoryContext } from '../../../../itemsComponents/products/category-filter/context/MainCategoryFilterContext';
 
 const AdminLogin: React.FC = () => {
   const { login, user, isLoading, isAuthenticated } = useAuth();
@@ -15,7 +16,10 @@ const AdminLogin: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { hideSlider } = useSlider();
-  hideSlider();
+  const {hideMainCategory} = useMainCategoryContext();
+           //hide slider
+               hideSlider();
+               hideMainCategory();
 
   // Check if user is admin after authentication
   useEffect(() => {

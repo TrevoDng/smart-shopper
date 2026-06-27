@@ -3,8 +3,9 @@ import React, { useCallback } from "react";
 import { Product } from "../types/Product";
 import { LoadingProduct } from "../LoadingProduct";
 import "./CategoryMainFilter.css";
+//import { Category } from "@mui/icons-material";
 
-interface CategoryMainFilterProps {
+export interface CategoryMainFilterProps {
     datas: Product[];
     selectedMainCategory: string | null;
     onSelectedMainCategory: (mainCategory: string | null) => void;
@@ -64,9 +65,18 @@ const CategoryMainFilter: React.FC<CategoryMainFilterProps> = ({
             // To allow deselecting, uncomment the line below and comment the next one
             // const isSameCategory = selectedMainCategory === mainCategoryValue;
             // onSelectedMainCategory(isSameCategory ? null : mainCategoryValue);
-            
             // Current behavior: selecting same category does nothing (keeps it selected)
-            onSelectedMainCategory(mainCategoryValue);
+
+            if (mainCategoryValue === "All") {
+                datas.map((category, index) => {
+                    //return onSelectedMainCategory(category);
+                return onSelectedMainCategory(category.category[index])
+            })
+            } else {
+                onSelectedMainCategory(mainCategoryValue);
+            }
+
+            
         }, 500);
     }, [onSelectedCategories, onBrandChange, onSelectedMainCategory, selectedMainCategory]);
 
@@ -79,6 +89,13 @@ const CategoryMainFilter: React.FC<CategoryMainFilterProps> = ({
         };
     }, []);
 
+    const showAllCategories =(category: string)=> {
+        onSelectedCategories([]);
+        onSelectedMainCategory(null);
+    }
+
+    const allCategories = ["All"];
+
     // If no categories, don't render
     if (uniqueMainCategories.length === 0) {
         return null;
@@ -87,6 +104,27 @@ const CategoryMainFilter: React.FC<CategoryMainFilterProps> = ({
     return (
         <div className="item-services" data-page-id="top-slide-design">
             <ul className="item-services-list">
+                {allCategories.map((category, index)=> {
+                    const isLoading = loadingItem === category;
+
+                    return (
+                        <li>
+                            <a 
+                                className={`type-link 'active'`}
+                                onClick={(e) => handleCategoryClick(category, e)}
+                            >
+                                {isLoading && (
+                                    <LoadingProduct loadingClass={"loading-product"} />
+                                )}
+                                    <span className="category-name">
+                                        All
+                                    </span>
+                                </a>
+                            </li>
+                            )
+                    })
+                }
+
                 {uniqueMainCategories.map((category, index) => {
                     const isActive = selectedMainCategory === category;
                     const isLoading = loadingItem === category;

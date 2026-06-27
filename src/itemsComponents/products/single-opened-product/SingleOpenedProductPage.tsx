@@ -11,12 +11,15 @@ import PaymentMethodSelector from "../cart/checkout/all-payments-options/Payment
 import { getFullImageUrl } from "../utils/getFullImageUrl";
 import Cart from "../cart/components/cart-new/Cart";
 import { CartlistButton } from "../cart/components/CartlistButton";
+import { useMainCategoryContext } from "../category-filter/context/MainCategoryFilterContext";
 
 interface OpenedProductPageProps {
     itemsData: Product[];
     setSelectedItemId: (id: string | null)=> void;
     itemId: string | null;
-    itemType?: string; // Made optional since it's not used in the component
+    itemType?: string; // Made optional since it's not used in the component 
+    setSelectedSize: (size: Size | null)=> void;
+    selectedSize: Size | null;
 } 
 
 interface Size {
@@ -35,24 +38,29 @@ interface Notification {
 const SingleOpenedProductPage: React.FC<OpenedProductPageProps>=({
     itemsData, 
     setSelectedItemId,
-    itemId
+    itemId, 
+    setSelectedSize,
+    selectedSize
 })=> {
 
   const [imgIndex, setImgIndex] = useState(0);
   const [isDescriptioExpand, setIsDescriptioExpand] = useState(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
+
   const descriptionRef = React.useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   const [notification, setNotification] = useState<Notification>({
     message: '',
     type: '',
     visible: false
   });
     const {hideSlider} = useSlider();
-      hideSlider();
+    const {hideMainCategory} = useMainCategoryContext();
+        //hide slider
+        hideSlider();
+        hideMainCategory();
 
     //popup image
     const [showImagePopup, setShowImagePopup] = useState<boolean>(false);
@@ -207,8 +215,6 @@ const SingleOpenedProductPage: React.FC<OpenedProductPageProps>=({
 
                   <div className="items-data" data-target={matchedProduct.id}>
                     
-                    {/* Image container was here*/}
-                    
                     <h4 className="inner-item-description">
                       {matchedProduct.title.toUpperCase()} 
                       <span className="inner-item-price">{matchedProduct.price}</span>
@@ -261,14 +267,18 @@ const SingleOpenedProductPage: React.FC<OpenedProductPageProps>=({
                           )}
 
                         <div className="action-buttons-container">
-                          <button 
+                          {/* <button 
                             className="add-to-cart" 
                             id="addToCart" 
                             disabled={matchedProduct.category === 'clothing' ? !selectedSize : false}
                             onClick={handleAddToCart}
-                          >
-                            <CartlistButton product={matchedProduct}/>Add to Cart
-                          </button>
+                          ></button>*/}
+                            <CartlistButton 
+                              product={matchedProduct} 
+                              title="Add to Cart"
+                              selectedSize={selectedSize}
+                              className="add-to-cart"
+                            />
                           
                           <button className="buy-now" 
                           onClick={()=> setShowPopup(true)}>

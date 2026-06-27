@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 //import { CartItem as CartItemType } from '../types/cart.types';
 //import { useCart } from '../context/CartContext';
 import styles from './CartItem.module.css';
-import { Product } from '../../../types/Product';
+import { Product, Size } from '../../../types/Product';
 import { useNavigate } from 'react-router-dom';
 import { cleanPrice } from '../../../utils/filterUtils';
 import { useCartlist } from '../../context/CartlistContext';
@@ -19,6 +19,9 @@ interface CartCardProps {
     //onSelectedType: (type: string) => void;
     onLoading: (id: string | null) => void;
     loading?: string | null;
+    selectedSize: Size | null;
+    clothing: string;
+    cartlistId: string;
 }
 
 const CartItem: React.FC<CartCardProps> = ({ 
@@ -26,7 +29,10 @@ const CartItem: React.FC<CartCardProps> = ({
     quantity,
     currency = "R ", 
     onItemId, 
-    //onSelectedType,  
+    //onSelectedType,
+    selectedSize,  
+    clothing,
+    cartlistId,
     onLoading,
     loading
  }) => {
@@ -50,7 +56,7 @@ const CartItem: React.FC<CartCardProps> = ({
            };
        
            const handleRemove=(id: string)=> {
-                removeFromCartlist(id);
+                removeFromCartlist(id, clothing, selectedSize);
            }
 
            useEffect(() => {
@@ -67,7 +73,10 @@ const CartItem: React.FC<CartCardProps> = ({
       <div className={styles.itemDetails} 
           onClick={()=> getItemId(product.id)}>
         <h3 className={styles.itemName}>{product.title}</h3>
-        <p className={styles.itemPrice}>${product.price}</p>
+        {product.category[0].split("/")[0] === "clothing" && selectedSize && 
+                      <p>Size: {selectedSize.name}</p>
+                    }
+        <p className={styles.itemPrice}>R{product.price}</p>
       </div>
       <div className={styles.quantityControl}>
         <button className={styles.quantityBtn}
@@ -81,7 +90,7 @@ const CartItem: React.FC<CartCardProps> = ({
         R{(cleanPrice(product.price) * quantity).toFixed(2)}
       </div>
       <button
-        onClick={()=> handleRemove(product.id)}
+        onClick={()=> handleRemove(cartlistId)}
         className={styles.removeBtn}
         aria-label="Remove item"
       >

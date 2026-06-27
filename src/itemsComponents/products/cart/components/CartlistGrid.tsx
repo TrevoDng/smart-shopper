@@ -28,7 +28,7 @@ const CartlistGrid: React.FC<CartGridProps>=({
      
     
         const handleRemove =(id: any)=> {
-            removeFromCartlist(id);
+           // removeFromCartlist(id);
         }
     
         const handleMoveToCart =(id: any)=> {

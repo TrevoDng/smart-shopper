@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { CartlistContextType, CartlistItem, CartlistState } from "../type/CartlistItem"
 
-import { Product } from "../../types/Product";
+import { Product, Size } from "../../types/Product";
 
 const CartlistContext = createContext<CartlistContextType | undefined>(undefined);
 
@@ -71,20 +71,32 @@ export const CartlistProvider: React.FC<{ children:
 
         }, [cartlist]);
 
-        const addToCartlist = (product: Product) => {
+        const addToCartlist = (product: Product, selectedSize?: Size | null) => {
             setCartlist(prev => {
                 if (!prev) return {items: []};
 
-                const existingItem = prev.items.find(item => item.product.id === product.id);
+                const isClothing = product.category[0].split("/")[0] === "clothing";
+
+                const existingItem = prev.items.find(item => {
+                    if(isClothing) {
+                        return item.product.id === product.id && item.selectedSize?.code === selectedSize?.code;
+                    } else {
+                        return item.product.id === product.id;
+                    }
+                });
 
                 //Increment quantity
                 if (existingItem) {
                     return {
-                        items: prev.items.map(item => 
-                            item.product.id === product.id ? 
-                            { ...item, quantity: item.quantity + 1 } : 
-                            item
-                    )
+                        items: prev.items.map(item => {
+                            const isMatch = isClothing
+                                ? item.product.id === product.id && item.selectedSize?.code === selectedSize?.code
+                                : item.product.id === product.id;
+                                
+                            return isMatch 
+                                ? { ...item, quantity: item.quantity + 1 } 
+                                : item; 
+                    })
                 };
                 } else {
                     //add new item quantity 1
@@ -92,28 +104,36 @@ export const CartlistProvider: React.FC<{ children:
                         id: `wish_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
                         product,
                         quantity: 1,
-                        addedAt: new Date()
+                        addedAt: new Date(),
+                        selectedSize: isClothing ? selectedSize || null : null
                     };
                     return {items: [...prev.items, newItem]};
                 }
             });        
         };
         
-        const removeFromCartlist = (productId: string) => {
-            if(!productId || typeof productId !== 'string') {
-                    console.error("Invalid productId", productId);
+        const removeFromCartlist = (cartlistId: string, clothing: string, selectedSize: Size | null) => {
+            if(!cartlistId || typeof cartlistId !== 'string') {
+                    console.error("Invalid productId", cartlistId);
             }
+
             setCartlist(prev => {
                 if(!prev) return {items: []};
 
-                    return {items: prev.items.filter(item => item.product.id !== productId)}
+                    return {items: prev.items.filter(item => {
+                        if (clothing === "clothing" && isInCartlist(cartlistId)) {
+                           return item.id !== cartlistId; /*item.selectedSize?.code !== selectedSize?.code*/ // item.product.id !== productId
+                        } else {
+                           return item.id !== cartlistId; /*item.selectedSize?.code !== selectedSize?.code */ // item.product.id !== productId
+                        }
+                    })}
                     });
         };
 
         // Update quantity directly using (+/- buttons)
         const updateQuantity=(productId: string, newQuantity: number)=> {
             if (newQuantity <=0) {
-                removeFromCartlist(productId);
+               // removeFromCartlist(productId);
             } else {
                 setCartlist(prev => {
                     if (!prev) return {items: []};

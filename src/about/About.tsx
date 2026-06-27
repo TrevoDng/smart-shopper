@@ -3,6 +3,7 @@ import React from 'react';
 import './About.css';
 import { useSlider } from '../slider/slidercontext/SliderContext';
 import { useNavigate } from 'react-router-dom';
+import { useMainCategoryContext } from '../itemsComponents/products/category-filter/context/MainCategoryFilterContext';
 
 interface TeamMember {
   id: number;
@@ -22,7 +23,10 @@ const About: React.FC = () => {
 
   const navigate = useNavigate();
   const { hideSlider }= useSlider();
-    hideSlider();
+  const {hideMainCategory} = useMainCategoryContext();
+     //hide slider
+      hideSlider();
+      hideMainCategory();
 
   const stats: StatItem[] = [
     { id: 1, value: '10K+', label: 'Happy Customers' },

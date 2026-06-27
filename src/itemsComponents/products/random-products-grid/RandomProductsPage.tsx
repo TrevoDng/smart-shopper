@@ -1,6 +1,6 @@
 // src/itemsComponents/products/random-products-grid/RandomProductsPage.tsx
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
-import { Product } from "../types/Product";
+import { Product, Size } from "../types/Product";
 import "./RandomProductGrid.css";
 import { LoadingProduct } from "../LoadingProduct";
 import { useNavigate } from "react-router-dom";
@@ -35,6 +35,7 @@ interface RandomProductsPageProps {
   onItemId: (id: string) => void;
   onLoading: (id: string | null) => void;
   loading?: string | null;
+  selectedSize: Size;
 }
 
 // shuffleArray function
@@ -85,6 +86,7 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
   onItemId,
   onLoading,
   loading,
+  selectedSize
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
@@ -354,7 +356,9 @@ const RandomProductsPage: React.FC<RandomProductsPageProps> = ({
                       
                       {/* Action Buttons */}
                       <div className="product-actions">
-                        <CartlistButton product={product} />
+                        <CartlistButton 
+                        product={product} 
+                        selectedSize={selectedSize} />
                         <WishlistButton product={product} />
                       </div>
                     </div>

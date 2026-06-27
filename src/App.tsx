@@ -7,7 +7,7 @@ import Slider from './slider/new-slider/Slider';
 import { SliderProvider, useSlider } from './slider/slidercontext/SliderContext';
 import PageNotFound from './pagenotfound/pagenotfound';
 import { FooterComponent } from './footer/Footer';
-import { Product } from './itemsComponents/products/types/Product';
+import { Product, Size } from './itemsComponents/products/types/Product';
 import TopNavbar from './nav/TopNavbar';
 import Footers from './footer/Footers';
 import './App.css';
@@ -61,14 +61,34 @@ import Sales from './account/components/Admin/Sales';
 import ProductPage from './itemsComponents/products/random-products-grid/ProductPage';
 import { productsApi } from './services/productsApi';
 import { useDiscounts } from './hooks/useDiscounts';
-import CategoryMainFilter from './itemsComponents/products/category-filter/CategoryMainFilter';
+import CategoryMainFilter, { CategoryMainFilterProps } from './itemsComponents/products/category-filter/CategoryMainFilter';
 import RegistrationInviteCode from './account/components/Admin/RegistrationInviteCode';
 import Admins from './account/components/Admin/Admins';
+import { MainCategoryProvider, useMainCategoryContext } from './itemsComponents/products/category-filter/context/MainCategoryFilterContext';
+import RoleSelector from './account/components/Auth/RoleSelector';
+import EmailVerification from './account/components/Auth/email-verification/EmailVerification';
 
 const SliderConditionalRenderer: React.FC = () => {
   const { isSliderVisible } = useSlider();
   return isSliderVisible ? <Slider /> : null;
 };
+
+ const MainCategoryRender: React.FC<CategoryMainFilterProps> =({
+  datas,
+    selectedMainCategory,
+    onSelectedMainCategory,
+    onSelectedCategories,
+    onBrandChange,
+ })=> {
+  const {iscategoryVisible} = useMainCategoryContext();
+  return iscategoryVisible ? <CategoryMainFilter 
+  datas={datas} 
+  selectedMainCategory={selectedMainCategory}  // Pass selectedCategories instead
+  onSelectedMainCategory={onSelectedMainCategory}
+  onSelectedCategories={onSelectedCategories}
+  onBrandChange={onBrandChange}
+/> : null;
+}
 
 // Protected route component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -110,6 +130,7 @@ interface ProductMainPageProps {
   onItemId: (id: string) => void;
   onLoading: (id: string | null) => void;
   loading?: string | null;
+  selectedSize: Size | null;
 }
 
 const ProductMainPage: React.FC<ProductMainPageProps> = ({
@@ -131,6 +152,7 @@ const ProductMainPage: React.FC<ProductMainPageProps> = ({
   onItemId,
   onLoading,
   loading,
+  selectedSize
 }) => {
   return (
     <div className='products-page-container'>
@@ -155,6 +177,7 @@ const ProductMainPage: React.FC<ProductMainPageProps> = ({
               onItemId={onItemId}
               onLoading={onLoading}
               loading={loading}
+              selectedSize={selectedSize}
             />
           ) : (
                         <ProductPage
@@ -174,6 +197,7 @@ const ProductMainPage: React.FC<ProductMainPageProps> = ({
               onItemId={onItemId}
               onLoading={onLoading}
               loading={loading}
+              selectedSize={selectedSize}
             />
           )}
         </div>
@@ -240,6 +264,9 @@ interface MainPageControllerProps {
   setTypeById: (id: number | null) => void;
   onLoading: (id: string | null) => void;
   loading?: string | null;
+  setSelectedSize: (size: Size | null)=> void;
+  selectedSize: Size | null;
+  clothing: string;
 }
 
 const MainPageController: React.FC<MainPageControllerProps> = ({
@@ -262,6 +289,9 @@ const MainPageController: React.FC<MainPageControllerProps> = ({
   setTypeById,
   onLoading,
   loading,
+  setSelectedSize,
+  selectedSize,
+  clothing
 }) => {
   const [showCart, setShowCart] = useState(false);
 
@@ -281,6 +311,8 @@ const MainPageController: React.FC<MainPageControllerProps> = ({
         onItemId={setSelectedItemId}
         onLoading={onLoading}
         loading={loading}
+        clothing={clothing}
+        selectedSize={selectedSize}
       />
     );
   };
@@ -317,9 +349,12 @@ const MainPageController: React.FC<MainPageControllerProps> = ({
             onItemId={setSelectedItemId}
             onLoading={onLoading}
             loading={loading}
+            selectedSize={selectedSize}
           />
         } />
 
+        <Route path='/role-selector' element={<RoleSelector />} />
+        <Route path="/verify-email" element={<EmailVerification />} />
         <Route path='/login' element={
           <PublicRoute>
             <CustomerLogin />
@@ -343,6 +378,8 @@ const MainPageController: React.FC<MainPageControllerProps> = ({
             itemsData={products}
             itemId={selectedItemId}
             setSelectedItemId={setSelectedItemId}
+            setSelectedSize={setSelectedSize}
+            selectedSize={selectedSize}
           />
         } />
         
@@ -395,6 +432,7 @@ const MainPageController: React.FC<MainPageControllerProps> = ({
   );
 };
 
+
 // Main AppContent component - Single source of truth for all state
 const AppContent: React.FC = () => {
   // Product data states
@@ -415,6 +453,7 @@ const AppContent: React.FC = () => {
   const [typeById, setTypeById] = useState<number | null>(null);
   const [loadingDelay, setLoadingDelay] = useState<string | null>(null);
   const [selectedMainCategory, setSelectedMainCategory] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   
   const { getDiscountedPrice, fetchDiscounts } = useDiscounts();
   const { id } = useParams();
@@ -510,11 +549,14 @@ const AppContent: React.FC = () => {
   }
 
   console.log("Selected Categories:", selectedCategories);
+
+ 
   
   return (
     <ThemeProvider>
       <AuthProvider>
         <SliderProvider defaultVisible={true}>
+          <MainCategoryProvider defaultVisible={true}>
           <div className='website-main-container'>
             <CartlistProvider>
               <WishlistProvider>
@@ -528,7 +570,8 @@ const AppContent: React.FC = () => {
                 {!searchQuery &&
                 <SliderConditionalRenderer />
                 }
-                <CategoryMainFilter 
+
+                 <MainCategoryRender 
   datas={products} 
   selectedMainCategory={selectedMainCategory}  // Pass selectedCategories instead
   onSelectedMainCategory={setSelectedMainCategory}
@@ -559,6 +602,9 @@ const AppContent: React.FC = () => {
                       setTypeById={setTypeById}
                       onLoading={setLoadingDelay}
                       loading={loadingDelay}
+                      selectedSize={selectedSize}
+                      setSelectedSize={setSelectedSize}
+                      clothing='clothing'
                     />
                   </AuthProvider>
                   <FooterComponent />
@@ -567,15 +613,18 @@ const AppContent: React.FC = () => {
               </WishlistProvider> 
             </CartlistProvider>
           </div>
+          </MainCategoryProvider>
         </SliderProvider> 
       </AuthProvider>
     </ThemeProvider>
   );
 };
 
+
+
 // Main App component
-const App: React.FC = () => {
-  return <AppContent />;
+const App: React.FC= () => {
+  return <AppContent/>;
 };
 
 export default App;

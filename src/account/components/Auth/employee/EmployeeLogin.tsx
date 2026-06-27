@@ -5,6 +5,7 @@ import { LoginCredentials } from '../../../types/user';
 import { useSlider } from '../../../../slider/slidercontext/SliderContext'; 
 import './EmployeeLogin.css';
 import { useNavigate } from 'react-router-dom';
+import { useMainCategoryContext } from '../../../../itemsComponents/products/category-filter/context/MainCategoryFilterContext';
 
 const EmployeeLogin: React.FC = () => {
   const { login, isLoading, user, isAuthenticated } = useAuth();
@@ -18,7 +19,10 @@ const EmployeeLogin: React.FC = () => {
   //const navigate = useNavigate();
 
   const { hideSlider } = useSlider();
-  hideSlider();
+  const {hideMainCategory} = useMainCategoryContext();
+           //hide slider
+               hideSlider();
+               hideMainCategory();
 
   // Redirect if already authenticated as employee
   useEffect(() => {

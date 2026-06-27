@@ -3,8 +3,8 @@
 export interface Size {
   code: string;
   name: string;
-  type: "string" | "number";
   quantity: number;
+  type: "string" | "number";
 }
 
 export interface Product {

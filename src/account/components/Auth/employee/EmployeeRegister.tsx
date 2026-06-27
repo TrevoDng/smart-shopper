@@ -4,6 +4,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { RegisterData } from '../../../types/user';
 import './EmployeeRegister.css';
 import { useSlider } from '../../../../slider/slidercontext/SliderContext';
+import { useMainCategoryContext } from '../../../../itemsComponents/products/category-filter/context/MainCategoryFilterContext';
 
 const EmployeeRegister: React.FC = () => {
   const { register, isLoading } = useAuth();
@@ -27,6 +28,8 @@ const EmployeeRegister: React.FC = () => {
     message: string;
   } | null>(null);
    const { hideSlider } = useSlider();
+   const {hideMainCategory} = useMainCategoryContext();
+                hideMainCategory();
     // Hide slider on this page
     useEffect(() => {
       hideSlider();

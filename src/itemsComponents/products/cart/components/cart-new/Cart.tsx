@@ -8,6 +8,8 @@ import styles from './Cart.module.css';
 import CartItem from './CartItem';
 import { useNavigate } from 'react-router-dom';
 import PaymentMethodSelector from '../../checkout/all-payments-options/PaymentMethodSelector';
+import { Size } from '../../../types/Product';
+import { useMainCategoryContext } from '../../../category-filter/context/MainCategoryFilterContext';
 
 interface CartGridProps {
     currency?: string;
@@ -15,25 +17,31 @@ interface CartGridProps {
     //onSelectedType: (type: string) => void;
     onLoading: (id: string | null) => void;
     loading?: string | null;
+    clothing: string; 
+    selectedSize: Size | null;
 }
 
 const Cart: React.FC<CartGridProps>=({
     currency = "R ", 
     onItemId,
     onLoading,
-    loading
+    loading,
+    clothing, 
+    selectedSize
 })=> {
 
     const [showPaymentPopup, setShowPaymentPopup] = useState<boolean>(false);
     const { removeFromCartlist, cartlist, updateQuantity, clearCartlist } = useCartlist();
          const {hideSlider} = useSlider();
+         const {hideMainCategory} = useMainCategoryContext();
          //hide slider
              hideSlider();
+             hideMainCategory();
 
              const navigate = useNavigate();
         
             const handleRemove =(id: any)=> {
-                removeFromCartlist(id);
+                removeFromCartlist(id, clothing, selectedSize);
             }
         
             const handleMoveToCart =(id: any)=> {
@@ -96,6 +104,9 @@ const Cart: React.FC<CartGridProps>=({
                 onLoading={onLoading}
                 loading={loading}
                 quantity={product.quantity}
+                selectedSize={product.selectedSize}
+                clothing={clothing}
+                cartlistId={product.id}
           />
         ))}
       </div>
