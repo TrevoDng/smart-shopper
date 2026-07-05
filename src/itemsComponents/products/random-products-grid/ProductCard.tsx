@@ -2,6 +2,7 @@
 import React from 'react';
 import { Product } from '../types/Product';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+// @ts-ignore: Allow importing CSS without declaration file
 import './ProductCard.css';
 
 interface ProductCardProps {

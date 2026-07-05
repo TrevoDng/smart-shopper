@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { RegisterData } from '../../../types/user';
+
+// @ts-ignore: Allow importing CSS without declaration file
 import './EmployeeRegister.css';
 import { useSlider } from '../../../../slider/slidercontext/SliderContext';
 import { useMainCategoryContext } from '../../../../itemsComponents/products/category-filter/context/MainCategoryFilterContext';

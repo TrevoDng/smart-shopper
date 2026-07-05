@@ -1,3 +1,4 @@
+// src/account/payments/PaymentMethodSelector.tsx
 import React from 'react';
 import styles from './PaymentMethodSelector.module.css';
 

@@ -1,6 +1,7 @@
 // src/account/components/Auth/EmailVerification.tsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+// @ts-ignore: CSS module declarations not defined in this project
 import './EmailVerification.css';
 import { useMainCategoryContext } from '../../../../itemsComponents/products/category-filter/context/MainCategoryFilterContext';
 import { useSlider } from '../../../../slider/slidercontext/SliderContext';
@@ -46,7 +47,8 @@ const EmailVerification: React.FC = () => {
 
   const handleResendVerification = () => {
     // Implement resend logic here
-    alert('Verification email resent. Please check your inbox.');
+    navigate('/resend-verification');
+    //alert('Verification email resent. Please check your inbox.');
   };
 
   return (

@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext'; 
 import { LoginCredentials } from '../../../types/user';
 import { useSlider } from '../../../../slider/slidercontext/SliderContext';
+// TypeScript may complain about importing CSS modules in .tsx files
+// @ts-ignore: Allow importing CSS for side effects
 import './CustomerLogin.css';
 import { useMainCategoryContext } from '../../../../itemsComponents/products/category-filter/context/MainCategoryFilterContext';
 
@@ -58,29 +60,36 @@ const CustomerLogin: React.FC = () => {
     }
   }, [isAuthenticated, user]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setSuccessMessage('');
+// In CustomerLogin.tsx, update the handleSubmit function:
 
-    try {
-      await login(credentials);
-      // The useEffect above will handle redirect after authentication
-    } catch (error: any) {
-      // Handle specific error messages from server
-      const errorMessage = error.message || "Invalid email or password";
-      
-      if (errorMessage.includes('EMAIL_NOT_VERIFIED')) {
-        setError('Please verify your email before logging in. Check your inbox for the verification link.');
-      } else if (errorMessage.includes('PENDING_APPROVAL')) {
-        setError('Your account is pending admin approval. You will be notified once approved.');
-      } else if (errorMessage.includes('ACCOUNT_INACTIVE')) {
-        setError('Your account is not active. Please contact support for assistance.');
-      } else {
-        setError(errorMessage);
-      }
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError('');
+  setSuccessMessage('');
+
+  try {
+    await login(credentials);
+    // The useEffect above will handle redirect after authentication
+  } catch (error: any) {
+    const errorMessage = error.message || "Invalid email or password";
+    
+    // ✅ Check for email verification error
+    if (errorMessage.includes('EMAIL_NOT_VERIFIED') || 
+        errorMessage.includes('Please verify your email')) {
+      setError('Please verify your email before logging in.');
+      // Redirect to resend page with email pre-filled
+      setTimeout(() => {
+        window.location.href = `/resend-verification?email=${encodeURIComponent(credentials.email)}`;
+      }, 1500);
+    } else if (errorMessage.includes('PENDING_APPROVAL')) {
+      setError('Your account is pending admin approval. You will be notified once approved.');
+    } else if (errorMessage.includes('ACCOUNT_INACTIVE')) {
+      setError('Your account is not active. Please contact support for assistance.');
+    } else {
+      setError(errorMessage);
     }
-  };
+  }
+};
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;

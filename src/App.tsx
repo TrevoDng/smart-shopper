@@ -10,6 +10,7 @@ import { FooterComponent } from './footer/Footer';
 import { Product, Size } from './itemsComponents/products/types/Product';
 import TopNavbar from './nav/TopNavbar';
 import Footers from './footer/Footers';
+// @ts-ignore: Allow importing CSS without declaration file
 import './App.css';
 import RandomProductsPage from './itemsComponents/products/random-products-grid/RandomProductsPage';
 import WishListGrid from './itemsComponents/products/wish-list/components/wish-list-grid/WishListGrid';
@@ -35,6 +36,7 @@ import AdminSetup from './account/components/Admin/AdminSetup';
 import EmployeeMainPage from './account/components/Employee/EmployeeMainPage';
 import AdminMainPage from './account/components/Admin/AdminMainPage';
 import { ThemeProvider } from './styles/context/ThemeContext';
+// @ts-ignore: Allow importing CSS without declaration file
 import './styles/themes.css';
 
 // Protected routes
@@ -67,11 +69,15 @@ import Admins from './account/components/Admin/Admins';
 import { MainCategoryProvider, useMainCategoryContext } from './itemsComponents/products/category-filter/context/MainCategoryFilterContext';
 import RoleSelector from './account/components/Auth/RoleSelector';
 import EmailVerification from './account/components/Auth/email-verification/EmailVerification';
+import Checkout from './account/payments/Checkout';
+import PaymentStatus from './account/payments/PaymentStatus';
+import ResendVerification from './account/components/Auth/email-verification/ResendVerification';
 
 const SliderConditionalRenderer: React.FC = () => {
   const { isSliderVisible } = useSlider();
   return isSliderVisible ? <Slider /> : null;
 };
+
 
  const MainCategoryRender: React.FC<CategoryMainFilterProps> =({
   datas,
@@ -294,6 +300,8 @@ const MainPageController: React.FC<MainPageControllerProps> = ({
   clothing
 }) => {
   const [showCart, setShowCart] = useState(false);
+    const { hideSlider }= useSlider();
+hideSlider();
 
   const WishlistPage = () => {
     return (
@@ -366,7 +374,12 @@ const MainPageController: React.FC<MainPageControllerProps> = ({
             <CustomerRegister />
           </PublicRoute>
         } />
-        
+        <Route path="/resend-verification" element={
+          <PublicRoute>
+            <ResendVerification />
+          </PublicRoute>
+        } />
+
         <Route path="/account" element={
           <ProtectedRoute>
             <AccountProfile />
@@ -386,7 +399,6 @@ const MainPageController: React.FC<MainPageControllerProps> = ({
         <Route path='/add-product' element={<AddProduct />} />
         <Route path='/wishlist' element={<WishlistPage />} />
         <Route path='/cart' element={<CartlistPage />} />
-        <Route path='/checkout' element={<CreatePaymentMethodSelector />} />
         <Route path='/deals' element={<Deals />} />
         <Route path='/about' element={<About />} />
         <Route path="*" element={<PageNotFound />} />
@@ -425,8 +437,14 @@ const MainPageController: React.FC<MainPageControllerProps> = ({
         <Route path='/admin/enquiries' element={<Enquiries />} />
         <Route path='/admin/suggestions' element={<Suggestions />} />
         <Route path='/admin/admin-profile' element={<AdminAccountProfile />} />
+
+        <Route path="/checkout" element={<Checkout />} />
         
         <Route path="/login" element={<CustomerLogin />} />
+
+          {/* Payment Status Routes - Add these */}
+  <Route path="/payment/success" element={<PaymentStatus />} />
+  <Route path="/payment/cancel" element={<PaymentStatus />} />
       </Routes>
     </Router>
   );
@@ -457,6 +475,7 @@ const AppContent: React.FC = () => {
   
   const { getDiscountedPrice, fetchDiscounts } = useDiscounts();
   const { id } = useParams();
+
 
   // Load products from API
   useEffect(() => {

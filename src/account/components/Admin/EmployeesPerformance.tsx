@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AdminLayout from '../layout/AdminLayout';
+
+// @ts-ignore: Allow importing CSS without declaration file
 import './EmployeesPerformance.css';
 
 interface EmployeeProduct {

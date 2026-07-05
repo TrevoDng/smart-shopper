@@ -275,7 +275,7 @@ body {
 /* Responsive */
 @media (max-width: 992px) {
   .navbar {
-    background-color: #ff4646;
+    /*background-color: #ff4646;*/
     padding: auto 100px !important;
   }
   .search-box input {

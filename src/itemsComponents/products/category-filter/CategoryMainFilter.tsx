@@ -112,6 +112,7 @@ const CategoryMainFilter: React.FC<CategoryMainFilterProps> = ({
                             <a 
                                 className={`type-link 'active'`}
                                 onClick={(e) => handleCategoryClick(category, e)}
+                                style={{cursor: "pointer"}}
                             >
                                 {isLoading && (
                                     <LoadingProduct loadingClass={"loading-product"} />

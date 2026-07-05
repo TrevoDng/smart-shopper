@@ -1,5 +1,6 @@
 // components/TopNavbar.tsx
 import React, { useEffect, useRef, useState } from 'react';
+// @ts-ignore: Allow importing CSS without declaration file
 import './TopNavbar.css';
 import { useWishlist } from '../itemsComponents/products/wish-list/context/WishlistContext';
 import { useCartlist } from '../itemsComponents/products/cart/context/CartlistContext';
