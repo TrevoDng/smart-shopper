@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { LoginCredentials } from '../../../types/user';
 import { useSlider } from '../../../../slider/slidercontext/SliderContext'; 
+// @ts-ignore: CSS module declarations not defined in this project
 import './EmployeeLogin.css';
 import { useNavigate } from 'react-router-dom';
 import { useMainCategoryContext } from '../../../../itemsComponents/products/category-filter/context/MainCategoryFilterContext';

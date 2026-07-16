@@ -2,6 +2,7 @@
 import React, { useCallback } from "react";
 import { Product } from "../types/Product";
 import { LoadingProduct } from "../LoadingProduct";
+// @ts-ignore
 import "./CategoryMainFilter.css";
 //import { Category } from "@mui/icons-material";
 
@@ -44,6 +45,7 @@ const CategoryMainFilter: React.FC<CategoryMainFilterProps> = ({
         e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
     ) => {
         e.preventDefault();
+        console.log("Clicked Main Category: ", mainCategoryValue);
         
         // Clear any existing timer
         if (timerRef.current) {

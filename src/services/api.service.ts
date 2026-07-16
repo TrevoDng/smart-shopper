@@ -1,5 +1,18 @@
 // src/services/api.service.ts
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+// ✅ Auto-detect API URL - no hardcoded ports!
+// Uses window.location.origin to get current domain
+const getApiBaseUrl = (): string => {
+    // If in production, use the same domain with /api
+    if (window.location.hostname !== 'localhost' && 
+        window.location.hostname !== '127.0.0.1') {
+        return `${window.location.origin}/api`;
+    }
+    
+    // Development: use environment variable or default
+    return process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 class ApiService {
   private async request<T>(
@@ -9,6 +22,7 @@ class ApiService {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
+        "Origin": window.location.origin,
         ...options.headers,
       },
       ...options,

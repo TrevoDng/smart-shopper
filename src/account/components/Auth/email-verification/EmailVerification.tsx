@@ -1,54 +1,91 @@
 // src/account/components/Auth/EmailVerification.tsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-// @ts-ignore: CSS module declarations not defined in this project
+// @ts-ignore
 import './EmailVerification.css';
 import { useMainCategoryContext } from '../../../../itemsComponents/products/category-filter/context/MainCategoryFilterContext';
 import { useSlider } from '../../../../slider/slidercontext/SliderContext';
+
+const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api';
 
 const EmailVerification: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
-   const {hideSlider} = useSlider();
-      const {hideMainCategory} = useMainCategoryContext();
-                   //hide slider
-                       hideSlider();
-                       hideMainCategory();
+  const { hideSlider } = useSlider();
+  const { hideMainCategory } = useMainCategoryContext();
+  
+  hideSlider();
+  hideMainCategory();
 
   useEffect(() => {
     const verified = searchParams.get('verified');
     const error = searchParams.get('reason');
     const msg = searchParams.get('message');
+    const token = searchParams.get('token');
 
+    // ✅ Case 1: Redirect from backend with verified=true
     if (verified === 'true') {
       setStatus('success');
       setMessage(msg || 'Email verified successfully!');
-    } else if (error) {
-      setStatus('error');
-      setMessage('Verification failed. Please try again or contact support.');
-    } else {
-      // If no params, check if there's a token in the URL
-      const token = searchParams.get('token');
-      if (token) {
-        // The backend will handle the verification, but we're showing the result
-        setStatus('loading');
-      } else {
-        setStatus('error');
-        setMessage('Invalid verification link.');
-      }
+      return;
     }
+
+    // ✅ Case 2: Error from backend redirect
+    if (error) {
+      setStatus('error');
+      setMessage(error === 'invalid-token' ? 'Invalid or expired verification link.' : 'Verification failed. Please try again.');
+      return;
+    }
+
+    // ✅ Case 3: Token in URL - call backend to verify
+    if (token) {
+      verifyTokenWithBackend(token);
+      return;
+    }
+
+    // No params = invalid link
+    setStatus('error');
+    setMessage('Invalid verification link.');
   }, [searchParams]);
+
+  // ✅ Call backend to verify token
+  const verifyTokenWithBackend = async (token: string) => {
+    try {
+      setStatus('loading');
+      
+      const response = await fetch(`${API_BASE}/auth/verify-email?token=${token}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json', // ✅ Tell backend we want JSON
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // ✅ Success
+        setStatus('success');
+        setMessage(data.message || 'Email verified successfully!');
+      } else {
+        // ❌ Failed
+        setStatus('error');
+        setMessage(data.message || data.error?.message || 'Verification failed. Please try again.');
+      }
+    } catch (error: any) {
+      setStatus('error');
+      setMessage('An error occurred. Please try again or contact support.');
+    }
+  };
 
   const handleLogin = () => {
     navigate('/login');
   };
 
   const handleResendVerification = () => {
-    // Implement resend logic here
     navigate('/resend-verification');
-    //alert('Verification email resent. Please check your inbox.');
   };
 
   return (
