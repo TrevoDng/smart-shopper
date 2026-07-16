@@ -1,6 +1,7 @@
 // src/itemsComponents/products/random-products-grid/ProductPage.tsx
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { Product, Size } from "../types/Product";
+// @ts-ignore
 import "./ProductPage.css";
 import { LoadingProduct } from "../LoadingProduct";
 import { useNavigate } from "react-router-dom";
